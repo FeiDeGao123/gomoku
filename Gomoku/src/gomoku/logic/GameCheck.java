@@ -1,25 +1,24 @@
-package Gomoku.logic;
+package gomoku.logic;
 
-public class MainCheck {
+public class GameCheck {
 	public static final int SIZE = 15;
 	public static final int BLACK = 1;
 	public static final int WHITE = 2;
-	public static final int dx[] = {-1, -1, 0, 1};
-	public static final int dy[] = {0, 1, 1, 1};
+	private static final int dx[] = {-1, -1, 0, 1};
+	private static final int dy[] = {0, 1, 1, 1};
 	private int grid[][];
 	
-	public MainCheck() {
+	public GameCheck() {
 		grid = new int[SIZE][SIZE];
 	}
 	
-	public boolean checkPush(int x, int y, int color) {
-		if (x < 0 || x >= SIZE || y < 0 || y >= SIZE || grid[x][y] != 0) return false;
-		grid[x][y] = color;
-		return true;
+	public boolean checkBound(int x, int y) {
+		return !(x < 0 || x >= SIZE || y < 0 || y >= SIZE);
 	}
 	
-	public boolean checkBound(int x, int y) {
-		if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return false;
+	public boolean checkPush(int x, int y, int color) {
+		if (!checkBound(x, y) || grid[x][y] != 0) return false;
+		grid[x][y] = color;
 		return true;
 	}
 	
@@ -36,6 +35,14 @@ public class MainCheck {
         	if (cnt >= 5) return true;
         }
         return false;
+	}
+	
+	public void reset() {
+	    for (int i = 0; i < SIZE; i++) {
+	        for (int j = 0; j < SIZE; j++) {
+	            grid[i][j] = 0;
+	        }
+	    }
 	}
 	
 	public int[][] getGrid() {

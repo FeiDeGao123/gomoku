@@ -1,11 +1,11 @@
-package Gomoku.ui;
+package gomoku.ui;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class MenuPanel extends JPanel{
-	private Frame pf;
-	public MenuPanel(Frame pf) {
+	private MainFrame pf;
+	public MenuPanel(MainFrame pf) {
 		this.pf = pf;
 		this.setBackground(new Color(222, 184, 135));
 		this.setLayout(new GridBagLayout());
@@ -25,7 +25,7 @@ public class MenuPanel extends JPanel{
         });
         gbc.gridy = 1;
         this.add(pveBtn, gbc);
-        JButton pvpLocalBtn = new JButton("多人单机");
+        JButton pvpLocalBtn = new JButton("单机对战");
         pvpLocalBtn.setPreferredSize(new Dimension(220, 50));
         pvpLocalBtn.setFont(new Font("微软雅黑", Font.BOLD, 20));
         pvpLocalBtn.setFocusPainted(false);
@@ -34,7 +34,7 @@ public class MenuPanel extends JPanel{
         });
         gbc.gridy = 2;
         this.add(pvpLocalBtn, gbc);
-        JButton pvpOnlineBtn = new JButton("多人联机");
+        JButton pvpOnlineBtn = new JButton("联机对战");
         pvpOnlineBtn.setPreferredSize(new Dimension(220, 50));
         pvpOnlineBtn.setFont(new Font("微软雅黑", Font.BOLD, 20));
         pvpOnlineBtn.setFocusPainted(false);
