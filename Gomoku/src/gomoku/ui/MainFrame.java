@@ -3,6 +3,8 @@ package gomoku.ui;
 import javax.swing.*;
 import java.awt.*;
 import gomoku.logic.GameCheck;
+import gomoku.network.GameClient;
+import gomoku.network.SocketClient;
 
 public class MainFrame extends JFrame {
     private CardLayout cl;
@@ -10,6 +12,7 @@ public class MainFrame extends JFrame {
     private MenuPanel mp;
     private GridPanel gp;
     private GameCheck gc;
+    private GameClient client;
     
     public MainFrame() {
         this.setTitle("网络五子棋");
@@ -18,10 +21,12 @@ public class MainFrame extends JFrame {
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.gc = new GameCheck();
+        this.client = new SocketClient();
         cl = new CardLayout();
         jp = new JPanel(cl);
-        mp = new MenuPanel(this);
-        gp = new GridPanel(this, gc);
+        mp = new MenuPanel(this, client);
+        gp = new GridPanel(this, gc, client);
+        client.setObj(gp);
         jp.add(mp, "MENU");
         jp.add(gp, "GAME");
         this.add(jp);
@@ -30,6 +35,10 @@ public class MainFrame extends JFrame {
     
     public void startLocalGame() {
     	gp.restart();
+        cl.show(jp, "GAME");
+    }
+
+    public void startOnlineGame() {
         cl.show(jp, "GAME");
     }
     

@@ -2,10 +2,12 @@ package gomoku.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import gomoku.network.GameClient;
 
-public class MenuPanel extends JPanel{
+public class MenuPanel extends JPanel {
 	private MainFrame pf;
-	public MenuPanel(MainFrame pf) {
+	
+	public MenuPanel(MainFrame pf, GameClient client) {
 		this.pf = pf;
 		this.setBackground(new Color(222, 184, 135));
 		this.setLayout(new GridBagLayout());
@@ -39,7 +41,7 @@ public class MenuPanel extends JPanel{
         pvpOnlineBtn.setFont(new Font("微软雅黑", Font.BOLD, 20));
         pvpOnlineBtn.setFocusPainted(false);
         pvpOnlineBtn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(pf, "多人联机暂未开放！");
+            client.sendConnect("124.223.22.121", 1145);
         });
         gbc.gridy = 3;
         this.add(pvpOnlineBtn, gbc);
