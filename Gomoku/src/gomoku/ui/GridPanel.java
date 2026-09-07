@@ -18,6 +18,8 @@ public class GridPanel extends JPanel implements GameListener {
 	private int currColor;
 	private boolean gameOver;
 	private JDialog matchDialog;
+	private int preX = -1;
+	private int preY = -1;
 	private final int SQ = 52;
 	private final int EDGE = 21;
 	private final int RADIUS = 20;
@@ -39,6 +41,8 @@ public class GridPanel extends JPanel implements GameListener {
 
 				if (mode == LOCAL) {
 					if (gc.checkPush(x, y, currColor)) {
+						preX = x;
+						preY = y;
 						repaint();
 						if (gc.checkEnd(x, y, currColor)) {
 							gameOver = true;
@@ -46,6 +50,8 @@ public class GridPanel extends JPanel implements GameListener {
 							JOptionPane.showMessageDialog(mf, "恭喜，" + winner + " 获胜！");
 						} else {
 							currColor ^= 3;
+							String nextRole = (currColor == GameCheck.BLACK) ? "黑棋" : "白棋";
+						    mf.updateStatus("[单机模式] 轮到 " + nextRole + " 落子", true);
 						}
 					}
 				} else if (mode == ONLINE) {
@@ -53,16 +59,18 @@ public class GridPanel extends JPanel implements GameListener {
 						JOptionPane.showMessageDialog(mf, "还没轮到你落子，请等待对手！");
 						return;
 					}
-
 					if (gc.checkPush(x, y, myColor)) {
+						preX = x;
+						preY = y;
 						repaint();
 						client.sendPush(x, y);
-
 						if (gc.checkEnd(x, y, myColor)) {
 							gameOver = true;
 							JOptionPane.showMessageDialog(mf, "恭喜，你战胜了对手！");
 						} else {
 							currColor ^= 3;
+							String role = (myColor == GameCheck.BLACK) ? "黑棋" : "白棋";
+						    mf.updateStatus("[联机对战 - 你执" + role + "] 等待对手", false);
 						}
 					}
 				}
@@ -72,17 +80,19 @@ public class GridPanel extends JPanel implements GameListener {
 	
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.setColor(Color.BLACK);
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setColor(Color.BLACK);
 		for (int i = 0; i < GameCheck.SIZE; i++) {
-			g.drawLine(EDGE, EDGE + i * SQ, EDGE + (GameCheck.SIZE - 1) * SQ, EDGE + i * SQ);
-			g.drawLine(EDGE + i * SQ, EDGE, EDGE + i * SQ, EDGE + (GameCheck.SIZE - 1) * SQ);
+			g2d.drawLine(EDGE, EDGE + i * SQ, EDGE + (GameCheck.SIZE - 1) * SQ, EDGE + i * SQ);
+			g2d.drawLine(EDGE + i * SQ, EDGE, EDGE + i * SQ, EDGE + (GameCheck.SIZE - 1) * SQ);
 		}
 		
 		int stars[][] = {{7, 7}, {3, 3}, {11, 3}, {3, 11}, {11, 11}};
 		for (int[] star : stars) {
 			int cx = EDGE + star[0] * SQ - DOT;
 			int cy = EDGE + star[1] * SQ - DOT;
-			g.fillOval(cx, cy, DOT * 2, DOT * 2);
+			g2d.fillOval(cx, cy, DOT * 2, DOT * 2);
 		}
 		
 		int grid[][] = gc.getGrid();
@@ -92,27 +102,38 @@ public class GridPanel extends JPanel implements GameListener {
 					int px = EDGE + i * SQ - RADIUS;
 					int py = EDGE + j * SQ - RADIUS;
 					if (grid[i][j] == GameCheck.BLACK) {
-						g.setColor(Color.BLACK);
+						g2d.setColor(Color.BLACK);
 					}
-					else g.setColor(Color.WHITE);
-					g.fillOval(px, py, RADIUS * 2, RADIUS * 2);
+					else g2d.setColor(Color.WHITE);
+					g2d.fillOval(px, py, RADIUS * 2, RADIUS * 2);
 				}
 			}
+		}
+		if (preX != -1 && preY != -1) {
+			g2d.setColor(new Color(230, 0, 0));
+			int cx = EDGE + preX * SQ - DOT;
+			int cy = EDGE + preY * SQ - DOT;
+			g2d.fillOval(cx, cy, DOT * 2, DOT * 2);
 		}
 	}
 	
 	public void restart() {
+		preX = -1;
+		preY = -1;
 		this.mode = LOCAL;
 		gc.reset();
         currColor = GameCheck.BLACK;
         gameOver = false;
         repaint();
+        if (mf != null) {
+            mf.updateStatus("[单机模式] 轮到 黑棋 落子", true);
+        }
     }
 
 	public void playerWait() {
 		matchDialog = new JDialog(mf, "对局匹配中", true);
 		matchDialog.setSize(320, 160);
-		matchDialog.setLocationRelativeTo(mf); // 居中显示
+		matchDialog.setLocationRelativeTo(mf);
 		matchDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		JPanel panel = new JPanel(new BorderLayout(10, 15));
 		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 15, 20));
@@ -126,7 +147,6 @@ public class GridPanel extends JPanel implements GameListener {
 			matchDialog.dispose();
 		});
 		matchDialog.addWindowListener(new WindowAdapter() {
-			@Override
 			public void windowClosing(WindowEvent e) {
 				client.disconnect();
 			}
@@ -138,6 +158,8 @@ public class GridPanel extends JPanel implements GameListener {
 	}
 
 	public void gameStart(int color) {
+		preX = -1;
+		preY = -1;
 		if (matchDialog != null && matchDialog.isShowing()) {
 			matchDialog.dispose();
 		}
@@ -148,28 +170,43 @@ public class GridPanel extends JPanel implements GameListener {
 		this.gameOver = false;
 		repaint();
 		mf.startOnlineGame();
-		String role = (color == GameCheck.BLACK) ? "黑棋 (先手)" : "白棋 (后手)";
+		String role = (color == GameCheck.BLACK) ? "黑棋(先手)" : "白棋(后手)";
+		String turn = (myColor == GameCheck.BLACK) ? "你的回合" : "等待对手";
+		mf.updateStatus("[联机对战 - 你执" + role + "] " + turn, false);
 		JOptionPane.showMessageDialog(mf, "匹配成功！对局开始，你执: " + role);
 	}
 
 	public void otherPush(int x, int y) {
 		int oppColor = myColor ^ 3;
 		if (gc.checkPush(x, y, oppColor)) {
+			preX = x;
+			preY = y;
 			repaint();
 			if (gc.checkEnd(x, y, oppColor)) {
 				gameOver = true;
-				JOptionPane.showMessageDialog(mf, "对手五连珠获胜，下次再战！");
+				JOptionPane.showMessageDialog(mf, "对手获胜！");
 			} else {
 				currColor ^= 3;
+				String role = (myColor == GameCheck.BLACK) ? "黑棋" : "白棋";
+			    mf.updateStatus("[联机对战 - 你执" + role + "] 你的回合", false);
 			}
 		}
 	}
 
 	public void otherQuit() {
+		mf.updateStatus("[联机对战] 对手逃跑！", false);
 		if (matchDialog != null && matchDialog.isShowing()) {
 			matchDialog.dispose();
 		}
 		gameOver = true;
-		JOptionPane.showMessageDialog(mf, "对手中途退出了游戏！");
+		JOptionPane.showMessageDialog(mf, "对手中途退出！");
+	}
+	
+	public int getMode() {
+		return this.mode;
+	}
+	
+	public boolean getOver() {
+		return this.gameOver;
 	}
 }
