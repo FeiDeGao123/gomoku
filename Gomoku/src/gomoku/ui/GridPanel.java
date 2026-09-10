@@ -4,15 +4,18 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import gomoku.logic.GameCheck;
-import gomoku.network.GameClient;
-import gomoku.network.GameListener;
+import gomoku.network.IClient;
+import gomoku.network.IListener;
+import gomoku.logic.GameAI;
 
-public class GridPanel extends JPanel implements GameListener {
+public class GridPanel extends JPanel implements IListener {
 	public static final int LOCAL = 1;
 	public static final int ONLINE = 2;
+	public static final int PVE = 3;
+	private GameAI ai = new GameAI();
 	private GameCheck gc;
 	private MainFrame mf;
-	private GameClient client;
+	private IClient client;
 	private int mode = LOCAL;
 	private int myColor;
 	private int currColor;
@@ -25,7 +28,7 @@ public class GridPanel extends JPanel implements GameListener {
 	private final int RADIUS = 20;
 	private final int DOT = 5;
 	
-	public GridPanel(MainFrame mf, GameCheck gc, GameClient client) {
+	public GridPanel(MainFrame mf, GameCheck gc, IClient client) {
 		this.mf = mf;
 		this.gc = gc;
 		this.client = client;
@@ -74,6 +77,46 @@ public class GridPanel extends JPanel implements GameListener {
 						}
 					}
 				}
+				else if (mode == PVE) {
+				    if (currColor != myColor) return;
+				    if (gc.checkPush(x, y, myColor)) {
+				        preX = x;
+				        preY = y;
+				        repaint();
+
+				        if (gc.checkEnd(x, y, myColor)) {
+				            gameOver = true;
+				            mf.updateStatus("[人机对战] 你赢了！", true);
+				            JOptionPane.showMessageDialog(mf, "恭喜，你赢了！");
+				            return;
+				        }
+				        currColor ^= 3;
+				        int aiColor = myColor ^ 3;
+				        mf.updateStatus("[人机对战] 电脑思考中...", false);
+				        Timer timer = new Timer(120, new ActionListener() {
+				            public void actionPerformed(ActionEvent evt) {
+				                int[] pos = ai.findMove(gc, aiColor);
+				                if (pos != null) {
+				                    gc.checkPush(pos[0], pos[1], aiColor);
+				                    preX = pos[0];
+				                    preY = pos[1];
+				                    repaint();
+				                    if (gc.checkEnd(pos[0], pos[1], aiColor)) {
+				                        gameOver = true;
+				                        mf.updateStatus("[人机对战] 电脑获胜！", true);
+				                        JOptionPane.showMessageDialog(mf, "电脑获胜！下次加油！");
+				                    } else {
+				                        currColor ^= 3;
+				                        String role = (myColor == GameCheck.BLACK) ? "黑棋" : "白棋";
+				                        mf.updateStatus("[人机对战 - 你执" + role + "] [轮到你了]", true);
+				                    }
+				                }
+				            }
+				        });
+				        timer.setRepeats(false);
+				        timer.start();
+				    }
+				}
 			}
 		});
 	}
@@ -118,17 +161,21 @@ public class GridPanel extends JPanel implements GameListener {
 	}
 	
 	public void restart() {
-		preX = -1;
-		preY = -1;
-		this.mode = LOCAL;
-		gc.reset();
-        currColor = GameCheck.BLACK;
-        gameOver = false;
-        repaint();
-        if (mf != null) {
-            mf.updateStatus("[单机模式] 轮到 黑棋 落子", true);
-        }
-    }
+		if (this.mode == PVE) {
+	        startPve(this.myColor);
+	        return;
+	    }
+	    preX = -1;
+	    preY = -1;
+	    this.mode = LOCAL;
+	    gc.reset();
+	    currColor = GameCheck.BLACK;
+	    gameOver = false;
+	    repaint();
+	    if (mf != null) {
+	        mf.updateStatus("[单机模式] 轮到 黑棋 落子", true);
+	    }
+	}
 
 	public void playerWait() {
 		matchDialog = new JDialog(mf, "对局匹配中", true);
@@ -176,6 +223,44 @@ public class GridPanel extends JPanel implements GameListener {
 		JOptionPane.showMessageDialog(mf, "匹配成功！对局开始，你执: " + role);
 	}
 
+	public void startPve(int playerColor) {
+	    preX = -1;
+	    preY = -1;
+	    this.mode = PVE;
+	    this.myColor = playerColor;
+	    gc.reset();
+	    currColor = GameCheck.BLACK;
+	    gameOver = false;
+	    repaint();
+	    if (myColor == GameCheck.BLACK) {
+	        if (mf != null) {
+	            mf.updateStatus("[人机对战 - 你执黑棋] [轮到你了]", true);
+	        }
+	    } else {
+	        if (mf != null) {
+	            mf.updateStatus("[人机对战 - 你执白棋] 电脑思考中...", false);
+	        }
+	        Timer timer = new Timer(120, new ActionListener() {
+	            public void actionPerformed(ActionEvent evt) {
+	                int aiColor = GameCheck.BLACK;
+	                int[] pos = ai.findMove(gc, aiColor);
+	                if (pos != null) {
+	                    gc.checkPush(pos[0], pos[1], aiColor);
+	                    preX = pos[0];
+	                    preY = pos[1];
+	                    repaint();
+	                    currColor = GameCheck.WHITE; 
+	                    if (mf != null) {
+	                        mf.updateStatus("[人机对战 - 你执白棋] [轮到你了]", true);
+	                    }
+	                }
+	            }
+	        });
+	        timer.setRepeats(false);
+	        timer.start();
+	    }
+	}
+	
 	public void otherPush(int x, int y) {
 		int oppColor = myColor ^ 3;
 		if (gc.checkPush(x, y, oppColor)) {

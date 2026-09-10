@@ -22,8 +22,9 @@ public class GameCheck {
 		return true;
 	}
 	
-	public boolean checkEnd(int x, int y, int color) {
-        for (int d = 0; d < 4; d++) {
+	public int countMax(int x, int y, int color) {
+		int mx = 1;
+		for (int d = 0; d < 4; d++) {
         	int cnt1 = 1, cnt2 = 1;
         	while (checkBound(x + cnt1 * dx[d], y + cnt1 * dy[d]) && grid[x + cnt1 * dx[d]][y + cnt1 * dy[d]] == color) {
         		cnt1++;
@@ -32,9 +33,13 @@ public class GameCheck {
         		cnt2++;
         	}
         	int cnt = cnt1 + cnt2 - 1;
-        	if (cnt >= 5) return true;
+        	mx = Math.max(mx, cnt);
         }
-        return false;
+		return mx;
+	}
+	
+	public boolean checkEnd(int x, int y, int color) {
+        return countMax(x, y, color) >= 5;
 	}
 	
 	public void reset() {

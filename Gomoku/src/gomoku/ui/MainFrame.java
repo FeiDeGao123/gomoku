@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import gomoku.logic.GameCheck;
-import gomoku.network.GameClient;
+import gomoku.network.IClient;
 import gomoku.network.SocketClient;
 
 public class MainFrame extends JFrame {
@@ -14,7 +14,7 @@ public class MainFrame extends JFrame {
     private MenuPanel mp;
     private GridPanel gp;
     private GameCheck gc;
-    private GameClient client;
+    private IClient client;
     private JButton restartBtn;
     private JLabel status;
     
@@ -93,6 +93,11 @@ public class MainFrame extends JFrame {
     }
 
     public void startOnlineGame() {
+        cl.show(jp, "GAME");
+    }
+    
+    public void startPveGame(int playerColor) {
+        gp.startPve(playerColor);
         cl.show(jp, "GAME");
     }
     

@@ -4,14 +4,14 @@ import javax.swing.*;
 import java.io.*;
 import java.net.*;
 
-public class SocketClient implements GameClient {
+public class SocketClient implements IClient {
 	private Socket socket;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
-	private GameListener gl;
+	private IListener gl;
 	private volatile boolean isRunning;
 	
-	public void setObj(GameListener gl) {
+	public void setObj(IListener gl) {
 		this.gl = gl;
 	}
 	
