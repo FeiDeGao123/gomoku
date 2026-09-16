@@ -4,19 +4,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import gomoku.dao.user;
+import gomoku.dao.DataProcessing;
 import gomoku.logic.GameCheck;
 import gomoku.network.IClient;
 import gomoku.network.SocketClient;
 
 public class MainFrame extends JFrame {
+	private static final long serialVersionUID = 1L;
     private CardLayout cl;
     private JPanel jp;
     private MenuPanel mp;
     private GridPanel gp;
     private GameCheck gc;
     private IClient client;
-    private JButton restartBtn;
+    private JButton rstBtn;
+    private JButton undoBtn;
+    private JButton giveUpBtn;
     private JLabel status;
+    private user currUser;
+    private DataProcessing dp = new DataProcessing();
     
     public MainFrame() {
         this.setTitle("网络五子棋");
@@ -37,6 +44,31 @@ public class MainFrame extends JFrame {
         this.add(jp);
         cl.show(jp, "MENU");
     }
+
+    public user getCurrUser() {
+    	return currUser;
+    }
+    
+    public DataProcessing getDataProcessing() {
+    	return dp;
+    }
+
+    public void setCurrUser(user u) {
+        this.currUser = u;
+        if (mp != null) {
+            mp.updateUserInfo(currUser);
+        }
+    }
+
+    public void settleMatch(boolean isWin, String hexSteps) {
+        if (currUser != null) {
+            dp.settleMatch(currUser.getID(), isWin, hexSteps);
+            this.currUser = dp.getUserById(currUser.getID());
+            if (mp != null) {
+                mp.updateUserInfo(currUser);
+            }
+        }
+    }
     
     private JPanel createBar() {
     	JPanel option = new JPanel(new BorderLayout());
@@ -52,20 +84,35 @@ public class MainFrame extends JFrame {
 	    					"当前正在联机对战中，退出将直接判负退出，是否确认退出？", 
 	    					"退出警告", JOptionPane.YES_NO_OPTION);
 	    		    if (choice != JOptionPane.YES_OPTION) return;
+	    		    settleMatch(false, "");
 	    		}
 	    		back();
 			}
 		});
-
-    	restartBtn = new JButton("重新开始");
-        restartBtn.setFont(new Font("微软雅黑", Font.BOLD, 14));
-        restartBtn.setFocusPainted(false);
-        restartBtn.addActionListener(new ActionListener() {
+    	rstBtn = new JButton("重新开始");
+        rstBtn.setFont(new Font("微软雅黑", Font.BOLD, 14));
+        rstBtn.setFocusPainted(false);
+        rstBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gp.restart();
 			}
 		});
-
+        undoBtn = new JButton("悔棋");
+        undoBtn.setFont(new Font("微软雅黑", Font.BOLD, 14));
+        undoBtn.setFocusPainted(false);
+        undoBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gp.undo();
+			}
+		});
+        giveUpBtn = new JButton("认输");
+        giveUpBtn.setFont(new Font("微软雅黑", Font.BOLD, 14));
+        giveUpBtn.setFocusPainted(false);
+        giveUpBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gp.giveUp();
+			}
+		});
         JButton settingBtn = new JButton("设置");
         settingBtn.setFont(new Font("微软雅黑", Font.BOLD, 14));
         settingBtn.setFocusPainted(false);
@@ -74,9 +121,10 @@ public class MainFrame extends JFrame {
 				JOptionPane.showMessageDialog(MainFrame.this, "没做");
 			}
 		});
-
         bar.add(backBtn);
-        bar.add(restartBtn);
+        bar.add(rstBtn);
+        bar.add(undoBtn);
+        bar.add(giveUpBtn);
         bar.add(settingBtn);
         status = new JLabel("准备中...");
         status.setFont(new Font("微软雅黑", Font.BOLD, 15));
@@ -111,8 +159,8 @@ public class MainFrame extends JFrame {
     	if (status != null) {
     		status.setText(text);
     	}
-    	if (restartBtn != null) {
-    		restartBtn.setEnabled(restartFlag);
+    	if (rstBtn != null) {
+    		rstBtn.setEnabled(restartFlag);
     	}
     }
     
