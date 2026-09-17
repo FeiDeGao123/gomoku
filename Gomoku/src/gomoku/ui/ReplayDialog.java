@@ -1,7 +1,13 @@
 package gomoku.ui;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import gomoku.dao.MatchRecord;
@@ -13,6 +19,7 @@ public class ReplayDialog extends JDialog {
     private int currStep = 0;
     private ReplayPanel boardPanel;
     private JLabel infoLabel;
+    private MatchRecord record;
     private final int SQ = 40;
     private final int EDGE = 25;
     private final int RADIUS = 16;
@@ -20,24 +27,32 @@ public class ReplayDialog extends JDialog {
 
     public ReplayDialog(Dialog parent, MatchRecord record) {
         super(parent, "棋谱复盘 - " + String.format("%08d", record.getDjh()) + " [" + record.getRes() + "]", true);
-        this.setSize(620, 720);
+        this.record = record;
+        this.setSize(640, 750);
         this.setLocationRelativeTo(parent);
         this.setResizable(false);
         this.setLayout(new BorderLayout());
         parseHexSteps(record.getStep());
+
         boardPanel = new ReplayPanel();
         this.add(boardPanel, BorderLayout.CENTER);
+
         JPanel controlPanel = new JPanel(new BorderLayout());
         controlPanel.setBackground(new Color(205, 168, 120));
+
         infoLabel = new JLabel("准备就绪", SwingConstants.CENTER);
         infoLabel.setFont(new Font("微软雅黑", Font.BOLD, 14));
         infoLabel.setBorder(BorderFactory.createEmptyBorder(6, 0, 4, 0));
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 8));
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 8));
         btnPanel.setOpaque(false);
+
         JButton startBtn = new JButton("开局");
         JButton prevBtn = new JButton("上一步");
         JButton nextBtn = new JButton("下一步");
         JButton endBtn = new JButton("结束");
+        JButton exportBtn = new JButton("导出棋谱txt");
+
         startBtn.addActionListener(e -> {
         	currStep = 0;
         	updateView();
@@ -46,21 +61,26 @@ public class ReplayDialog extends JDialog {
         	if (currStep > 0) {
         		currStep--;
         		updateView();
-        		} 
+        	} 
         });
         nextBtn.addActionListener(e -> {
         	if (currStep < stepsList.size()) {
-        		currStep++; updateView();
+        		currStep++; 
+        		updateView();
         	}
         });
         endBtn.addActionListener(e -> { 
         	currStep = stepsList.size(); 
         	updateView(); 
         });
+        exportBtn.setFont(new Font("微软雅黑", Font.BOLD, 12));
+        exportBtn.setFocusPainted(false);
+        exportBtn.addActionListener(e -> exportToFile());
         btnPanel.add(startBtn);
         btnPanel.add(prevBtn);
         btnPanel.add(nextBtn);
         btnPanel.add(endBtn);
+        btnPanel.add(exportBtn);
         controlPanel.add(infoLabel, BorderLayout.NORTH);
         controlPanel.add(btnPanel, BorderLayout.SOUTH);
         this.add(controlPanel, BorderLayout.SOUTH);
@@ -85,9 +105,43 @@ public class ReplayDialog extends JDialog {
             int[] last = stepsList.get(currStep - 1);
             String role = (last[2] == GameCheck.BLACK) ? "黑棋" : "白棋";
             infoLabel.setText("第 " + currStep + " / " + stepsList.size() + " 步 [" 
-            		+ role + " 落子于 (第 " + (last[1] + 1) + " 行, 第 " + (last[0] + 1) + " 列)]");
+            		+ role + " 落子于 (第 " + (last[0] + 1) + " 列, 第 " + (last[1] + 1) + " 行)]");
         }
         boardPanel.repaint();
+    }
+
+    private void exportToFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("保存棋谱文本文件");
+        fileChooser.setSelectedFile(new File("gomoku_match_" + String.format("%08d", record.getDjh()) + ".txt"));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("文本文档 (*.txt)", "txt"));
+        int userSelection = fileChooser.showSaveDialog(this);
+        if (userSelection != JFileChooser.APPROVE_OPTION) return;
+        File fileToSave = fileChooser.getSelectedFile();
+        if (!fileToSave.getName().toLowerCase().endsWith(".txt")) {
+            fileToSave = new File(fileToSave.getParentFile(), fileToSave.getName() + ".txt");
+        }
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(fileToSave), StandardCharsets.UTF_8))) {
+            writer.write("对局编号: " + String.format("%08d", record.getDjh()) + "\n");
+            writer.write("对局战果: " + record.getRes() + "\n");
+            writer.write("积分变动: " + (record.getChange() > 0 ? "+" : "") + record.getChange() + " 分 (赛后积分: " + record.getNextRating() + " 分)\n");
+            writer.write("总计手数: " + record.getStepCount() + " 步\n");
+            writer.write("对局时间: " + record.getMatchTime() + "\n");
+            writer.write("步骤编码: " + record.getStep() + "\n");
+            writer.write("落子明细:\n");
+            for (int i = 0; i < stepsList.size(); i++) {
+                int[] step = stepsList.get(i);
+                String role = (step[2] == GameCheck.BLACK) ? "黑棋" : "白棋";
+                int row = step[1] + 1;
+                int col = step[0] + 1;
+                writer.write("第 " + (i + 1) + " 步: " + role + " 落子于第 " + row + " 行, 第 " + col + " 列\n");
+            }
+            writer.flush();
+            JOptionPane.showMessageDialog(this, "棋谱已成功导出至:\n" + fileToSave.getAbsolutePath(), "导出成功", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "导出棋谱失败: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private class ReplayPanel extends JPanel {
@@ -95,7 +149,6 @@ public class ReplayDialog extends JDialog {
         public ReplayPanel() {
             this.setBackground(new Color(222, 184, 135));
         }
-
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;

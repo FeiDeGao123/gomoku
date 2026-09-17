@@ -1,13 +1,13 @@
 package gomoku.dao;
 
-public class user {
+public class User {
 	private int id;
 	private String name;
 	private int score;
 	private int winCnt;
 	private int loseCnt;
 	
-	public user(int id, String name, int score, int winCnt, int loseCnt) {
+	public User(int id, String name, int score, int winCnt, int loseCnt) {
 		this.id = id;
 		this.name = name;
 		this.score = score;

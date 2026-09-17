@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import gomoku.dao.user;
+import gomoku.dao.User;
 import gomoku.dao.DataProcessing;
 
 public class LoginDialog extends JDialog {
@@ -12,7 +12,7 @@ public class LoginDialog extends JDialog {
     private JTextField userField;
     private JPasswordField passField;
     private DataProcessing dp = new DataProcessing();
-    private user loggedInUser = null;
+    private User loggedInUser = null;
 
     public LoginDialog() {
         this(null);
@@ -62,7 +62,7 @@ public class LoginDialog extends JDialog {
                     JOptionPane.showMessageDialog(LoginDialog.this, "«Î ‰»Î’À∫≈∫Õ√‹¬Î£°");
                     return;
                 }
-                user resUser = dp.login(u, p);
+                User resUser = dp.login(u, p);
                 if (resUser != null) {
                     loggedInUser = resUser;
                     dispose();
@@ -98,7 +98,7 @@ public class LoginDialog extends JDialog {
         this.add(panel);
     }
 
-    public user showDialog() {
+    public User showDialog() {
         this.setVisible(true);
         return loggedInUser;
     }

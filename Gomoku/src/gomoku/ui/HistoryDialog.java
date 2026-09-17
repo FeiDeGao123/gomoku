@@ -20,7 +20,7 @@ public class HistoryDialog extends JDialog {
 
     public HistoryDialog(Frame parent, int userId, DataProcessing dp) {
         super(parent, "个人对局历史", true);
-        this.setSize(720, 420); // 宽度调整为720，保证6列都能优雅展示
+        this.setSize(720, 420);
         this.setLocationRelativeTo(parent);
         this.setLayout(new BorderLayout());
         recordList = dp.getHistoryByUserId(userId);

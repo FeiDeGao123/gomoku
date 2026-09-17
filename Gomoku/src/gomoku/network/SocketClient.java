@@ -20,6 +20,9 @@ public class SocketClient implements IClient {
             public void run() {
                 try {
                     socket = new Socket(host, port);
+                    socket.setTcpNoDelay(true);
+                    socket.setKeepAlive(true);
+
                     oos = new ObjectOutputStream(socket.getOutputStream());
                     oos.flush();
                     ois = new ObjectInputStream(socket.getInputStream());
@@ -55,40 +58,25 @@ public class SocketClient implements IClient {
 	private void messagePro(Message msg) {
 		switch (msg.getType()) {
 			case Message.WAIT:
-				if (gl != null) {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							gl.playerWait();
-						}
-					});
-				}
+				if (gl != null) SwingUtilities.invokeLater(() -> gl.playerWait());
 				break;
 			case Message.START:
-				if (gl != null) {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							gl.gameStart(msg.getColor());
-						}
-					});
-				}
+				if (gl != null) SwingUtilities.invokeLater(() -> gl.gameStart(msg.getColor()));
 				break;
 			case Message.PUSH:
-				if (gl != null) {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							gl.otherPush(msg.getX(), msg.getY());
-						}
-					});
-				}
+				if (gl != null) SwingUtilities.invokeLater(() -> gl.otherPush(msg.getX(), msg.getY()));
 				break;
 			case Message.QUIT:
-				if (gl != null) {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							gl.otherQuit();
-						}
-					});
-				}
+				if (gl != null) SwingUtilities.invokeLater(() -> gl.otherQuit());
+				break;
+			case Message.CHAT:
+				if (gl != null) SwingUtilities.invokeLater(() -> gl.receiveChat(msg.getChatMsg()));
+				break;
+			case Message.SUBUNDO:
+				if (gl != null) SwingUtilities.invokeLater(() -> gl.subUndo()); 
+				break;
+			case Message.REPUNDO:
+				if (gl != null) SwingUtilities.invokeLater(() -> gl.repUndo(msg.isAgree()));
 				break;
 			default:
 				break;
@@ -99,11 +87,24 @@ public class SocketClient implements IClient {
 		send(new Message(Message.PUSH, x, y));
 	}
 
+	public void sendChat(String content) {
+		send(new Message(Message.CHAT, content));
+	}
+
+	public void sendSubUndo() {
+		send(new Message(Message.SUBUNDO));
+	}
+
+	public void sendRepUndo(boolean agree) {
+		send(new Message(Message.REPUNDO, agree));
+	}
+
 	private synchronized void send(Message msg) {
 		try {
 			if (oos != null) {
 				oos.writeObject(msg);
 				oos.flush();
+				oos.reset();
 			}
 		}
 		catch (IOException e) {
@@ -121,10 +122,6 @@ public class SocketClient implements IClient {
 	}
 
 	private void dispatchError(String message) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				JOptionPane.showMessageDialog(null, message);
-			}
-		});
+		SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, message));
 	}
 }

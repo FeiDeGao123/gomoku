@@ -63,6 +63,17 @@ public class GameServer {
             			other.send(msg);
             		}
             		break;
+            	case Message.CHAT:
+            		if (other != null) {
+            			other.send(msg);
+            		}
+            		break;
+                case Message.SUBUNDO:
+                case Message.REPUNDO:
+                    if (other != null) {
+                        other.send(msg);
+                    }
+                    break;
             	default:
             		break;
             }

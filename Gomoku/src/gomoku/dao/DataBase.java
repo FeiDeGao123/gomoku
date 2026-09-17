@@ -56,7 +56,8 @@ public class DataBase {
                     + "foreign key (match_id) references `game_match`(match_id)"
                     + ") engine=innodb default charset=utf8mb4;");
 
-        } catch (SQLException e) {
+        } 
+        catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -70,6 +71,7 @@ public class DataBase {
             if (rs != null) rs.close();
             if (stmt != null) stmt.close();
             if (conn != null) conn.close();
-        } catch (SQLException ignored) {}
+        } 
+        catch (SQLException ignored) {}
     }
 }

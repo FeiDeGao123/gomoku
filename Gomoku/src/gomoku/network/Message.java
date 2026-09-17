@@ -9,12 +9,17 @@ public class Message implements Serializable {
     public static final int START = 3;
     public static final int PUSH = 4;
     public static final int QUIT = 5;
+    public static final int CHAT = 6;
+    public static final int SUBUNDO = 7;
+    public static final int REPUNDO = 8;
     private int type;
     private int x;
     private int y;
     private int color;
+    private String chatMsg;
+    private boolean agree;
     
-    public Message() {};
+    public Message() {}
 
     public Message(int type) {
     	this.type = type;
@@ -29,6 +34,16 @@ public class Message implements Serializable {
     	this.type = type;
     	this.x = x;
     	this.y = y;
+    }
+    
+    public Message(int type, String chatMsg) {
+    	this.type = type;
+    	this.chatMsg = chatMsg;
+    }
+
+    public Message(int type, boolean agree) {
+        this.type = type;
+        this.agree = agree;
     }
     
     public int getType() {
@@ -47,6 +62,14 @@ public class Message implements Serializable {
     	return color;
     }
     
+    public String getChatMsg() {
+    	return chatMsg;
+    }
+    
+    public boolean isAgree() {
+    	return agree;
+    }
+    
     public void setType(int type) {
     	this.type = type;
     }
@@ -61,5 +84,13 @@ public class Message implements Serializable {
     
     public void setColor(int color) {
     	this.color = color;
+    }
+    
+    public void setChatMsg(String chatMsg) {
+    	this.chatMsg = chatMsg;
+    }
+    
+    public void setAgree(boolean agree) {
+    	this.agree = agree;
     }
 }

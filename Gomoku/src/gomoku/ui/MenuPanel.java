@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import gomoku.dao.user;
+import gomoku.dao.User;
 import gomoku.logic.GameCheck;
 import gomoku.network.IClient;
 
@@ -140,7 +140,7 @@ public class MenuPanel extends JPanel {
 		if (pf == null) return;
 		if (pf.getCurrUser() == null) {
 			LoginDialog dialog = new LoginDialog(pf);
-			user u = dialog.showDialog();
+			User u = dialog.showDialog();
 			if (u != null) {
 				pf.setCurrUser(u);
 			}
@@ -152,7 +152,7 @@ public class MenuPanel extends JPanel {
 		}
 	}
 
-	public void updateUserInfo(user u) {
+	public void updateUserInfo(User u) {
 		if (u == null) {
 			userLabel.setText("状态: 未登录");
 			userBtn.setText("登录 / 注册");

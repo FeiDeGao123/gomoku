@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataProcessing {
-    public user login(String name, String password) {
+    public User login(String name, String password) {
         String sql = "select * from `player` where username = ? and password = ?";
         try (Connection conn = DataBase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -13,7 +13,7 @@ public class DataProcessing {
             ps.setString(2, password);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new user(
+                    return new User(
                         rs.getInt("id"),
                         rs.getString("username"),
                         rs.getInt("rating"),
@@ -40,14 +40,14 @@ public class DataProcessing {
         }
     }
 
-    public user getUserById(int userId) {
+    public User getUserById(int userId) {
         String sql = "select * from `player` where id = ?";
         try (Connection conn = DataBase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new user(
+                    return new User(
                         rs.getInt("id"),
                         rs.getString("username"),
                         rs.getInt("rating"),
@@ -65,7 +65,7 @@ public class DataProcessing {
     public void settleMatch(int userId, boolean isWin, String hexSteps) {
         int delta = isWin ? 10 : -5;
         String reason = isWin ? "WIN" : "LOSS";
-        user currentUser = getUserById(userId);
+        User currentUser = getUserById(userId);
         int currentScore = (currentUser != null) ? currentUser.getScore() : 1000;
         int afterRating = isWin ? (currentScore + 10) : Math.max(0, currentScore - 5);
 
@@ -165,15 +165,15 @@ public class DataProcessing {
         return list;
     }
     
-    public List<user> getTopRankings(int limit) {
-        List<user> list = new ArrayList<>();
+    public List<User> getTopRankings(int limit) {
+        List<User> list = new ArrayList<>();
         String sql = "select * from `player` order by rating desc, win_cnt desc limit ?";
         try (Connection conn = DataBase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new user(
+                    list.add(new User(
                         rs.getInt("id"),
                         rs.getString("username"),
                         rs.getInt("rating"),
