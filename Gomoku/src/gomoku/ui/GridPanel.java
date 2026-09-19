@@ -32,6 +32,7 @@ public class GridPanel extends JPanel implements IListener {
 	private int radius = 20;
 	private int dot = 5;
 	private boolean hasUndone = false;
+	private int currentAiLevel = GameAI.EASY;
 	
 	public GridPanel(MainFrame mf, GameCheck gc, IClient client) {
 		this.mf = mf;
@@ -120,7 +121,7 @@ public class GridPanel extends JPanel implements IListener {
 						mf.updateStatus("[人机对战] 电脑思考中...", false);
 						Timer timer = new Timer(120, new ActionListener() {
 							public void actionPerformed(ActionEvent evt) {
-								int[] pos = ai.findMove(gc, aiColor);
+								int[] pos = ai.findMove(gc, aiColor, currentAiLevel);
 								if (pos != null) {
 									gc.checkPush(pos[0], pos[1], aiColor);
 									SoundPlayer.playDrop();
@@ -202,7 +203,7 @@ public class GridPanel extends JPanel implements IListener {
 	
 	public void restart() {
 		if (this.mode == PVE) {
-			startPve(this.myColor);
+			startPve(this.myColor, this.currentAiLevel);
 			return;
 		}
 		preX = -1;
@@ -276,7 +277,8 @@ public class GridPanel extends JPanel implements IListener {
 		JOptionPane.showMessageDialog(mf, "匹配成功！对局开始，你执: " + role);
 	}
 
-	public void startPve(int playerColor) {
+	public void startPve(int playerColor, int level) {
+		this.currentAiLevel = level;
 		preX = -1;
 		preY = -1;
 		this.mode = PVE;
@@ -285,18 +287,19 @@ public class GridPanel extends JPanel implements IListener {
 		currColor = GameCheck.BLACK;
 		gameOver = false;
 		repaint();
+		final String diffName = (level == GameAI.HARD) ? "困难" : ((level == GameAI.MID) ? "普通" : "简单");
 		if (myColor == GameCheck.BLACK) {
 			if (mf != null) {
-				mf.updateStatus("[人机对战 - 你执黑棋] [轮到你了]", true);
+				mf.updateStatus("[人机对战(" + diffName + ") - 你执黑棋] [轮到你了]", true);
 			}
 		} else {
 			if (mf != null) {
-				mf.updateStatus("[人机对战 - 你执白棋] 电脑先手思考中...", false);
+				mf.updateStatus("[人机对战(" + diffName + ") - 你执白棋] 电脑思考", false);
 			}
 			Timer timer = new Timer(120, new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					int aiColor = GameCheck.BLACK;
-					int[] pos = ai.findMove(gc, aiColor);
+					int[] pos = ai.findMove(gc, aiColor, currentAiLevel);
 					if (pos != null) {
 						gc.checkPush(pos[0], pos[1], aiColor);
 						SoundPlayer.playDrop();
@@ -305,7 +308,7 @@ public class GridPanel extends JPanel implements IListener {
 						repaint();
 						currColor = GameCheck.WHITE;
 						if (mf != null) {
-							mf.updateStatus("[人机对战 - 你执白棋] [轮到你了]", true);
+							mf.updateStatus("[人机对战(" + diffName + ") - 你执白棋] [轮到你了]", true);
 						}
 					}
 				}
@@ -313,6 +316,10 @@ public class GridPanel extends JPanel implements IListener {
 			timer.setRepeats(false);
 			timer.start();
 		}
+	}
+
+	public void startPve(int playerColor) {
+		startPve(playerColor, this.currentAiLevel);
 	}
 	
 	public void otherPush(int x, int y) {
@@ -436,9 +443,13 @@ public class GridPanel extends JPanel implements IListener {
 		} else if (mode == LOCAL) {
 			String nextRole = (currColor == GameCheck.BLACK) ? "黑棋" : "白棋";
 			mf.updateStatus("[单机模式] 轮到 " + nextRole + " 落子", true);
-		} else if (mode == PVE) {
+		} 
+		else if (mode == PVE) {
 			String myRole = (myColor == GameCheck.BLACK) ? "黑棋" : "白棋";
-			mf.updateStatus("[人机对战 - 你执" + myRole + "] [轮到你了]", true);
+			String diffName = "简单";
+			if (currentAiLevel == GameAI.MID) diffName = "普通";
+			else if (currentAiLevel == GameAI.HARD) diffName = "困难";
+			mf.updateStatus("[人机对战(" + diffName + ") - 你执" + myRole + "] [轮到你了]", true);
 		}
 	}
 

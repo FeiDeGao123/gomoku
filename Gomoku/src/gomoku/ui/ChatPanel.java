@@ -4,10 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import gomoku.network.IClient;
 
 public class ChatPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
+	private JLabel titleLabel;
 	private JTextArea msgArea;
 	private JTextField inField;
 	private JButton sendBtn;
@@ -24,7 +27,7 @@ public class ChatPanel extends JPanel {
 				BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(160, 110, 70)),
 				BorderFactory.createEmptyBorder(8, 8, 8, 8)
 		));
-		JLabel titleLabel = new JLabel("ÁÄÌìÊÒ", SwingConstants.CENTER);
+		titleLabel = new JLabel("ÁÄÌì¿ò", SwingConstants.CENTER);
 		titleLabel.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
 		titleLabel.setForeground(new Color(70, 30, 10));
 		this.add(titleLabel, BorderLayout.NORTH);
@@ -46,7 +49,6 @@ public class ChatPanel extends JPanel {
 		sendBtn.setFocusPainted(false);
 		sendBtn.setBackground(new Color(90, 52, 28));
 		sendBtn.setForeground(new Color(250, 240, 230));
-
 		ActionListener sendAction = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sendMessage();
@@ -57,6 +59,32 @@ public class ChatPanel extends JPanel {
 		bottomPanel.add(inField, BorderLayout.CENTER);
 		bottomPanel.add(sendBtn, BorderLayout.EAST);
 		this.add(bottomPanel, BorderLayout.SOUTH);
+		this.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				adjustChatUI();
+			}
+		});
+	}
+
+	private void adjustChatUI() {
+		int w = getWidth();
+		if (w <= 0) return;
+		float scale = Math.max(1.0f, Math.min(1.8f, w / 200.0f));
+		if (titleLabel != null) {
+			titleLabel.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, Math.round(14 * scale)));
+		}
+		if (msgArea != null) {
+			msgArea.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, Math.round(12 * scale)));
+		}
+		if (inField != null) {
+			inField.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, Math.round(12 * scale)));
+		}
+		if (sendBtn != null) {
+			sendBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, Math.round(12 * scale)));
+			sendBtn.setPreferredSize(new Dimension(Math.round(60 * scale), Math.round(28 * scale)));
+		}
+		revalidate();
+		repaint();
 	}
 	
 	private void sendMessage() {
@@ -74,7 +102,7 @@ public class ChatPanel extends JPanel {
 
 	public void appendMessage(String sender, String text) {
 		msgArea.append(sender + "£º\n  " + text + "\n");
-		msgArea.setCaretPosition(msgArea.getDocument().getLength()); // ×Ô¶¯¹ö¶¯µ½µ×²¿
+		msgArea.setCaretPosition(msgArea.getDocument().getLength());
 	}
 
 	public void clear() {

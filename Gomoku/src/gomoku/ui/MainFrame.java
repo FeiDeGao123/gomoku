@@ -5,6 +5,8 @@ import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Enumeration;
 import gomoku.dao.User;
 import gomoku.dao.DataProcessing;
@@ -22,10 +24,13 @@ public class MainFrame extends JFrame {
     private ChatPanel chatPanel;
     private GameCheck gc;
     private IClient client;
+    private JButton backBtn;
     private JButton rstBtn;
     private JButton undoBtn;
     private JButton giveUpBtn;
+    private JButton settingBtn;
     private JLabel status;
+    private JPanel bar;
     private User currUser;
     private DataProcessing dp = new DataProcessing();
     
@@ -51,6 +56,11 @@ public class MainFrame extends JFrame {
         jp.add(OptionBar, "GAME");
         this.add(jp);
         cl.show(jp, "MENU");
+        this.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                adjustTopBarUI();
+            }
+        });
     }
 
     public User getCurrUser() {
@@ -88,9 +98,9 @@ public class MainFrame extends JFrame {
     
     private JPanel createBar() {
     	JPanel option = new JPanel(new BorderLayout());
-    	JPanel bar = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 8));
+    	bar = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 8));
     	bar.setBackground(new Color(205, 168, 120));
-    	JButton backBtn = new JButton("返回");
+    	backBtn = new JButton("返回");
     	backBtn.setFont(new Font("微软雅黑", Font.BOLD, (int) (14 * scaleFactor)));
     	backBtn.setFocusPainted(false);
     	backBtn.addActionListener(new ActionListener() {
@@ -129,7 +139,7 @@ public class MainFrame extends JFrame {
 				gp.giveUp();
 			}
 		});
-        JButton settingBtn = new JButton("设置");
+        settingBtn = new JButton("设置");
         settingBtn.setFont(new Font("微软雅黑", Font.BOLD, (int) (14 * scaleFactor)));
         settingBtn.setFocusPainted(false);
         settingBtn.addActionListener(new ActionListener() {
@@ -147,11 +157,28 @@ public class MainFrame extends JFrame {
         status.setFont(new Font("微软雅黑", Font.BOLD, (int) (15 * scaleFactor)));
         status.setForeground(new Color(60, 20, 0));
         bar.add(status);
-
         option.add(bar, BorderLayout.NORTH);
         option.add(gp, BorderLayout.CENTER);
         option.add(chatPanel, BorderLayout.EAST);
         return option;
+    }
+
+    private void adjustTopBarUI() {
+        int w = getWidth();
+        if (w <= 0 || bar == null) return;
+        float dynamicScale = Math.max(1.0f, Math.min(1.8f, w / 920.0f));
+        Font btnFont = new Font("微软雅黑", Font.BOLD, Math.round(14 * dynamicScale));
+        if (backBtn != null) backBtn.setFont(btnFont);
+        if (rstBtn != null) rstBtn.setFont(btnFont);
+        if (undoBtn != null) undoBtn.setFont(btnFont);
+        if (giveUpBtn != null) giveUpBtn.setFont(btnFont);
+        if (settingBtn != null) settingBtn.setFont(btnFont);
+        if (status != null) status.setFont(new Font("微软雅黑", Font.BOLD, Math.round(15 * dynamicScale)));
+        if (chatPanel != null) {
+            chatPanel.setPreferredSize(new Dimension(Math.round(200 * dynamicScale), 0));
+        }
+        bar.revalidate();
+        bar.repaint();
     }
     
     public void startLocalGame() {
@@ -165,10 +192,14 @@ public class MainFrame extends JFrame {
         cl.show(jp, "GAME");
     }
     
-    public void startPveGame(int playerColor) {
-        gp.startPve(playerColor);
+    public void startPveGame(int playerColor, int level) {
+        gp.startPve(playerColor, level);
         if (chatPanel != null) chatPanel.clear();
         cl.show(jp, "GAME");
+    }
+
+    public void startPveGame(int playerColor) {
+        startPveGame(playerColor, gomoku.logic.GameAI.EASY);
     }
     
     public void back() {
@@ -220,6 +251,6 @@ public class MainFrame extends JFrame {
                     }
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception e) {}
     }
 }

@@ -122,7 +122,7 @@ public class DataProcessing {
                 try {
                     conn.setAutoCommit(true);
                     conn.close();
-                } catch (SQLException ignored) {}
+                } catch (SQLException e) {}
             }
         }
     }

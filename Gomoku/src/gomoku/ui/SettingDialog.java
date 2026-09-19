@@ -68,7 +68,7 @@ public class SettingDialog extends JDialog {
         mainPanel.add(soundPanel);
         mainPanel.add(Box.createVerticalStrut(8));
         JPanel authPanel = new JPanel(new BorderLayout(4, 4));
-        displayLabel = new JLabel("******", SwingConstants.CENTER);
+        displayLabel = new JLabel("000000", SwingConstants.CENTER);
         displayLabel.setFont(new Font("Consolas", Font.BOLD, 16));
         displayLabel.setForeground(new Color(90, 52, 28));
         displayLabel.setBorder(BorderFactory.createCompoundBorder(
@@ -86,7 +86,6 @@ public class SettingDialog extends JDialog {
             numBtn.setFocusPainted(false);
             numBtn.setBackground(new Color(230, 215, 195));
             numBtn.addActionListener(new ActionListener() {
-                @Override
                 public void actionPerformed(ActionEvent e) {
                     if (inputBuffer.length() < 6) {
                         inputBuffer.append(num);
@@ -125,7 +124,7 @@ public class SettingDialog extends JDialog {
 
     private void updateDisplay() {
         if (inputBuffer.length() == 0) {
-            displayLabel.setText("******");
+            displayLabel.setText("000000");
         } else {
             displayLabel.setText(inputBuffer.toString());
         }

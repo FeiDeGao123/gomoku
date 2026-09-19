@@ -4,7 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import gomoku.dao.User;
+import gomoku.logic.GameAI;
 import gomoku.logic.GameCheck;
 import gomoku.network.IClient;
 
@@ -13,6 +16,12 @@ public class MenuPanel extends JPanel {
 	private MainFrame pf;
 	private JLabel userLabel;
 	private JButton userBtn;
+	private JLabel title;
+	private JButton pveBtn;
+	private JButton pvpLocalBtn;
+	private JButton pvpOnlineBtn;
+	private JButton historyBtn;
+	private JButton rankBtn;
 
 	public MenuPanel() {
 		this(null, null);
@@ -20,7 +29,7 @@ public class MenuPanel extends JPanel {
 
 	public MenuPanel(MainFrame pf, IClient client) {
 		this.pf = pf;
-		this.setBackground(new Color(222, 184, 135));
+		this.setBackground(SettingDialog.MODE1);
 		this.setLayout(new BorderLayout());
 		JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
 		topBar.setOpaque(false);
@@ -29,6 +38,7 @@ public class MenuPanel extends JPanel {
 		userLabel.setForeground(new Color(80, 40, 0));
 		userBtn = new JButton("登录 / 注册");
 		userBtn.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		userBtn.setBackground(new Color(230, 215, 195));
 		userBtn.setFocusPainted(false);
 		userBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -40,30 +50,45 @@ public class MenuPanel extends JPanel {
 		this.add(topBar, BorderLayout.NORTH);
 		JPanel centerPanel = new JPanel(new GridBagLayout());
 		centerPanel.setOpaque(false);
-		JLabel title = new JLabel("网 络 五 子 棋");
+		title = new JLabel("网 络 五 子 棋");
 		title.setFont(new Font("微软雅黑", Font.BOLD, 48));
+		title.setForeground(new Color(80, 40, 0));
 		GridBagConstraints gbcTitle = new GridBagConstraints();
 		gbcTitle.insets = new Insets(10, 0, 20, 0);
 		gbcTitle.gridx = 0;
 		gbcTitle.gridy = 0;
 		centerPanel.add(title, gbcTitle);
-		JButton pveBtn = new JButton("人机对战");
+		pveBtn = new JButton("人机对战");
 		pveBtn.setPreferredSize(new Dimension(220, 48));
 		pveBtn.setFont(new Font("微软雅黑", Font.BOLD, 20));
+		pveBtn.setBackground(new Color(230, 215, 195));
 		pveBtn.setFocusPainted(false);
 		pveBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (pf == null) return;
+				String[] diffOptions = {"简单模式", "普通模式", "困难模式"};
+				int diffChoice = JOptionPane.showOptionDialog(
+					pf, "请选择人机对战难度：", "难度设置",
+					JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+					null, diffOptions, diffOptions[0]
+				);
+				if (diffChoice == -1) return;
+				int selectedLevel = GameAI.EASY;
+				if (diffChoice == 1) {
+					selectedLevel = GameAI.MID;
+				} else if (diffChoice == 2) {
+					selectedLevel = GameAI.HARD;
+				}
 				String[] options = {"执黑 (先手)", "执白 (后手)"};
 				int choice = JOptionPane.showOptionDialog(
-					pf, "请选择你的执棋方：", "人机对战设置",
+					pf, "请选择你的执棋方：", "先手设置",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
 					null, options, options[0]
 				);
 				if (choice == 0) {
-					pf.startPveGame(GameCheck.BLACK);
+					pf.startPveGame(GameCheck.BLACK, selectedLevel);
 				} else if (choice == 1) {
-					pf.startPveGame(GameCheck.WHITE);
+					pf.startPveGame(GameCheck.WHITE, selectedLevel);
 				}
 			}
 		});
@@ -72,9 +97,10 @@ public class MenuPanel extends JPanel {
 		gbcPve.gridx = 0;
 		gbcPve.gridy = 1;
 		centerPanel.add(pveBtn, gbcPve);
-		JButton pvpLocalBtn = new JButton("单机对战");
+		pvpLocalBtn = new JButton("单机对战");
 		pvpLocalBtn.setPreferredSize(new Dimension(220, 48));
 		pvpLocalBtn.setFont(new Font("微软雅黑", Font.BOLD, 20));
+		pvpLocalBtn.setBackground(new Color(230, 215, 195));
 		pvpLocalBtn.setFocusPainted(false);
 		pvpLocalBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -86,9 +112,10 @@ public class MenuPanel extends JPanel {
 		gbcLocal.gridx = 0;
 		gbcLocal.gridy = 2;
 		centerPanel.add(pvpLocalBtn, gbcLocal);
-		JButton pvpOnlineBtn = new JButton("联机对战");
+		pvpOnlineBtn = new JButton("联机对战");
 		pvpOnlineBtn.setPreferredSize(new Dimension(220, 48));
 		pvpOnlineBtn.setFont(new Font("微软雅黑", Font.BOLD, 20));
+		pvpOnlineBtn.setBackground(new Color(230, 215, 195));
 		pvpOnlineBtn.setFocusPainted(false);
 		pvpOnlineBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -108,8 +135,9 @@ public class MenuPanel extends JPanel {
 		this.add(centerPanel, BorderLayout.CENTER);
 		JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 15));
 		bottomBar.setOpaque(false);
-		JButton historyBtn = new JButton("历史对局");
+		historyBtn = new JButton("历史对局");
 		historyBtn.setFont(new Font("微软雅黑", Font.BOLD, 14));
+		historyBtn.setBackground(new Color(230, 215, 195));
 		historyBtn.setFocusPainted(false);
 		historyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -122,8 +150,9 @@ public class MenuPanel extends JPanel {
 			}
 		});
 		bottomBar.add(historyBtn);
-		JButton rankBtn = new JButton("排行榜");
+		rankBtn = new JButton("排行榜");
 		rankBtn.setFont(new Font("微软雅黑", Font.BOLD, 14));
+		rankBtn.setBackground(new Color(230, 215, 195));
 		rankBtn.setFocusPainted(false);
 		rankBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -134,6 +163,33 @@ public class MenuPanel extends JPanel {
 		});
 		bottomBar.add(rankBtn);
 		this.add(bottomBar, BorderLayout.SOUTH);
+		this.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				adjustResponsiveUI();
+			}
+		});
+	}
+
+	private void adjustResponsiveUI() {
+		int w = getWidth();
+		if (w <= 0) return;
+		float scale = Math.max(1.0f, Math.min(1.8f, w / 800.0f));
+		title.setFont(new Font("微软雅黑", Font.BOLD, Math.round(48 * scale)));
+		int btnW = Math.round(220 * scale);
+		int btnH = Math.round(48 * scale);
+		Dimension btnDim = new Dimension(btnW, btnH);
+		Font btnFont = new Font("微软雅黑", Font.BOLD, Math.round(20 * scale));
+		pveBtn.setPreferredSize(btnDim);
+		pveBtn.setFont(btnFont);
+		pvpLocalBtn.setPreferredSize(btnDim);
+		pvpLocalBtn.setFont(btnFont);
+		pvpOnlineBtn.setPreferredSize(btnDim);
+		pvpOnlineBtn.setFont(btnFont);
+		Font smallBtnFont = new Font("微软雅黑", Font.BOLD, Math.round(14 * scale));
+		historyBtn.setFont(smallBtnFont);
+		rankBtn.setFont(smallBtnFont);
+		revalidate();
+		repaint();
 	}
 
 	private void handleUserAction() {
@@ -145,7 +201,7 @@ public class MenuPanel extends JPanel {
 				pf.setCurrUser(u);
 			}
 		} else {
-			int choice = JOptionPane.showConfirmDialog(pf, "确认注销当前账号？", "注销提示", JOptionPane.YES_NO_OPTION);
+			int choice = JOptionPane.showConfirmDialog(pf, "确定要当前账号吗？", "退出提示", JOptionPane.YES_NO_OPTION);
 			if (choice == JOptionPane.YES_OPTION) {
 				pf.setCurrUser(null);
 			}
@@ -158,7 +214,7 @@ public class MenuPanel extends JPanel {
 			userBtn.setText("登录 / 注册");
 		} else {
 			userLabel.setText(u.getName() + " [分: " + u.getScore() + " | 胜: " + u.getWinCnt() + " 负: " + u.getLoseCnt() + "]");
-			userBtn.setText("注销");
+			userBtn.setText("退出");
 		}
 	}
 }
