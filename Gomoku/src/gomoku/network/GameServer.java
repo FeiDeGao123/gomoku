@@ -4,10 +4,18 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+/**
+ * 五子棋联机对战服务端
+ * 负责监听端口、接入客户端长连接、线程级排队匹配、对局指令中继转发以及异常断线清理
+ */
 public class GameServer {
     public static final int PORT = 1145;
     private static final Queue<Player> que = new LinkedList<>();
 
+    /**
+     * 服务端启动主入口
+     * @param args 启动参数
+     */
     public static void main(String[] args) {
         System.out.println("服务器启动成功，端口: " + PORT);
         try (ServerSocket ss = new ServerSocket(PORT)) {
@@ -23,12 +31,20 @@ public class GameServer {
         }
     }
 
+    /**
+     * 玩家处理类
+     * 负责单个玩家连接的生命周期、对象流初始化等
+     */
     static class Player implements Runnable {
         private Socket socket;
         private Player other;
         private ObjectInputStream ois;
         private ObjectOutputStream oos;
 
+        /**
+         * 构造方法，初始化玩家流通道
+         * @param socket 建立好的客户端物理链路
+         */
         public Player(Socket socket) {
             this.socket = socket;
             try {
@@ -40,6 +56,10 @@ public class GameServer {
             }
         }
 
+        /**
+         * 线程执行主体
+         * 死循环阻塞读取客户端上报的数据包
+         */
         public void run() {
             try {
                 while (true) {
@@ -53,6 +73,10 @@ public class GameServer {
             }
         }
 
+        /**
+         * 消息处理与路由中继分发中心
+         * @param msg 客户端发来的协议实体
+         */
         private void messagePro(Message msg) {
             switch (msg.getType()) {
             	case Message.MATCH:
@@ -79,6 +103,10 @@ public class GameServer {
             }
         }
 
+        /**
+         * 匹配排队
+         * synchronized (que) 保护等待队列
+         */
         private void match() {
             synchronized (que) {
                 if (que.isEmpty()) {
@@ -97,6 +125,10 @@ public class GameServer {
             }
         }
 
+        /**
+         * 发送报文方法，使用 synchronized 修饰，防止多线程并发向同一个套接字输出流写数据导致包撕裂
+         * @param msg 待发送的数据
+         */
         public synchronized void send(Message msg) {
             try {
                 if (oos != null) {
@@ -108,6 +140,9 @@ public class GameServer {
             }
         }
 
+        /**
+         * 断线处理与资源彻底回收机制
+         */
         private void handleDisconnect() {
             synchronized (que) {
             	que.remove(this);
@@ -118,7 +153,7 @@ public class GameServer {
             }
             try {
                 socket.close();
-            } catch (IOException ignored) {}
+            } catch (IOException e) {}
         }
     }
 }

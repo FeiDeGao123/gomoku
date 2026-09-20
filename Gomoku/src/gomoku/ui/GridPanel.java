@@ -8,6 +8,10 @@ import gomoku.network.IClient;
 import gomoku.network.IListener;
 import gomoku.logic.GameAI;
 
+/**
+ * 五子棋棋盘图形交互面板
+ * 继承自 JPanel 并实现了 IListener 网络事件监听回调接口
+ */
 public class GridPanel extends JPanel implements IListener {
 	private static final long serialVersionUID = 1L;
 	public static final int LOCAL = 1;
@@ -34,6 +38,12 @@ public class GridPanel extends JPanel implements IListener {
 	private boolean hasUndone = false;
 	private int currentAiLevel = GameAI.EASY;
 	
+	/**
+	 * 构造方法，注入核心依赖、重置棋盘状态并注册鼠标落子监听器
+	 * @param mf 主窗口对象引用
+	 * @param gc 棋盘逻辑裁判对象
+	 * @param client 网络通信客户端
+	 */
 	public GridPanel(MainFrame mf, GameCheck gc, IClient client) {
 		this.mf = mf;
 		this.gc = gc;
@@ -153,6 +163,10 @@ public class GridPanel extends JPanel implements IListener {
 		});
 	}
 	
+	/**
+	 * 动态计算并更新棋盘大小
+	 * 根据当前面板的宽和高，自动推导方格大小 sq、边距 edgeX/edgeY 及棋子半径 radius
+	 */
 	private void updateMetrics() {
 		int w = getWidth();
 		int h = getHeight();
@@ -166,6 +180,9 @@ public class GridPanel extends JPanel implements IListener {
 		this.dot = Math.max(3, sq / 10);
 	}
 	
+	/**
+	 * 绘制棋盘组件核心方法
+	 */
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		this.setBackground(currentBgColor);
@@ -201,6 +218,9 @@ public class GridPanel extends JPanel implements IListener {
 		}
 	}
 	
+	/**
+	 * 重新开始当前模式对局
+	 */
 	public void restart() {
 		if (this.mode == PVE) {
 			startPve(this.myColor, this.currentAiLevel);
@@ -219,6 +239,9 @@ public class GridPanel extends JPanel implements IListener {
         }
     }
 
+	/**
+	 * 重置棋盘数据
+	 */
 	public void cleanReset() {
 		preX = -1;
 		preY = -1;
@@ -230,6 +253,9 @@ public class GridPanel extends JPanel implements IListener {
 		repaint();
 	}
 
+	/**
+	 * 网络监听回调：调起联机匹配排队等待框
+	 */
 	public void playerWait() {
 		matchDialog = new JDialog(mf, "对局匹配中", true);
 		matchDialog.setSize(320, 160);
@@ -257,6 +283,10 @@ public class GridPanel extends JPanel implements IListener {
 		matchDialog.setVisible(true);
 	}
 
+	/**
+	 * 网络监听回调，匹配成功并正式开始联机对战
+	 * @param color 服务端分配给本客户端的执棋颜色
+	 */
 	public void gameStart(int color) {
 		preX = -1;
 		preY = -1;
@@ -277,6 +307,11 @@ public class GridPanel extends JPanel implements IListener {
 		JOptionPane.showMessageDialog(mf, "匹配成功！对局开始，你执: " + role);
 	}
 
+	/**
+	 * 启动人机对战模式
+	 * @param playerColor 玩家执子颜色
+	 * @param level AI 难度等级
+	 */
 	public void startPve(int playerColor, int level) {
 		this.currentAiLevel = level;
 		preX = -1;
@@ -318,10 +353,16 @@ public class GridPanel extends JPanel implements IListener {
 		}
 	}
 
+	/**
+	 * 开始 AI 对战，默认模式
+	 */
 	public void startPve(int playerColor) {
 		startPve(playerColor, this.currentAiLevel);
 	}
 	
+	/**
+	 * 网络监听回调：接收到对手在 (x, y) 的落子信令
+	 */
 	public void otherPush(int x, int y) {
 		int oppColor = myColor ^ 3;
 		if (gc.checkPush(x, y, oppColor)) {
@@ -347,6 +388,9 @@ public class GridPanel extends JPanel implements IListener {
 		}
 	}
 
+	/**
+	 * 网络监听，对手中途断开或强退
+	 */
 	public void otherQuit() {
 		if (matchDialog != null && matchDialog.isShowing()) {
 			matchDialog.dispose();
@@ -359,6 +403,9 @@ public class GridPanel extends JPanel implements IListener {
 		}
 	}
 
+	/**
+	 * 本地玩家点击悔棋操作处理
+	 */
 	public void undo() {
 		if (gameOver) {
 			JOptionPane.showMessageDialog(mf, "本局游戏已结束，无法悔棋！");
@@ -397,6 +444,9 @@ public class GridPanel extends JPanel implements IListener {
 		}
 	}
 
+	/**
+	 * 网络监听回调，收到对手发来的悔棋申请
+	 */
 	public void subUndo() {
 		if (gameOver || gc.stkSize() == 0) {
 			client.sendRepUndo(false);
@@ -418,6 +468,10 @@ public class GridPanel extends JPanel implements IListener {
 		}
 	}
 
+	/**
+	 * 网络监听回调，收到对手针对己方悔棋申请的答复
+	 * @param agree 对手是否同意
+	 */
 	public void repUndo(boolean agree) {
 		if (agree) {
 			int steps = (currColor == myColor) ? 2 : 1;
@@ -432,6 +486,9 @@ public class GridPanel extends JPanel implements IListener {
 		}
 	}
 
+	/**
+	 * 同步并刷新主窗口顶部的状态栏
+	 */
 	private void syncStatus() {
 		if (mode == ONLINE) {
 			String myRole = (myColor == GameCheck.BLACK) ? "黑棋" : "白棋";
@@ -453,6 +510,11 @@ public class GridPanel extends JPanel implements IListener {
 		}
 	}
 
+	/**
+	 * 内部执行步数回退辅助方法
+	 * 循环执行出栈 stkPop，同步削减 Hex 棋谱长度，并重绘红点标记
+	 * @param steps 待回退的步数
+	 */
 	private void executeUndoSteps(int steps) {
 		for (int i = 0; i < steps; i++) {
 			if (gc.stkSize() > 0) {
@@ -473,6 +535,9 @@ public class GridPanel extends JPanel implements IListener {
 		repaint();
 	}
 
+	/**
+	 * 主动认输处理
+	 */
 	public void giveUp() {
 		if (gameOver) {
 			JOptionPane.showMessageDialog(mf, "游戏已结束！");
@@ -496,23 +561,36 @@ public class GridPanel extends JPanel implements IListener {
 			mf.updateStatus("[联机对战] 你已认输！", true);
 		}
 	}
-
+	
+	/**
+	 * 收到即时聊天消息，推送到 ChatPanel 文本域
+	 */
 	public void receiveChat(String msg) {
 		if (mf != null && mf.getChatPanel() != null) {
 			mf.getChatPanel().appendMessage("对手", msg);
 		}
 	}
 	
+	/**
+	 * 动态更换棋盘背景底色
+	 * @param c 新的颜色对象
+	 */
 	public void setBoardColor(Color c) {
 		this.currentBgColor = c;
 		this.setBackground(c);
 		repaint();
 	}
 	
+	/**
+	 * 获取模式
+	 */
 	public int getMode() {
 		return this.mode;
 	}
 	
+	/**
+	 * 获取游戏是否结束
+	 */
 	public boolean getOver() {
 		return this.gameOver;
 	}

@@ -201,7 +201,7 @@ public class MenuPanel extends JPanel {
 				pf.setCurrUser(u);
 			}
 		} else {
-			int choice = JOptionPane.showConfirmDialog(pf, "确定要当前账号吗？", "退出提示", JOptionPane.YES_NO_OPTION);
+			int choice = JOptionPane.showConfirmDialog(pf, "确定要退出当前账号吗？", "退出提示", JOptionPane.YES_NO_OPTION);
 			if (choice == JOptionPane.YES_OPTION) {
 				pf.setCurrUser(null);
 			}

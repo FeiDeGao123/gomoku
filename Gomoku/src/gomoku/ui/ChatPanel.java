@@ -8,6 +8,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import gomoku.network.IClient;
 
+/**
+ * 五子棋对局即时聊天面板
+ */
 public class ChatPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JLabel titleLabel;
@@ -17,6 +20,11 @@ public class ChatPanel extends JPanel {
 	private IClient client;
 	private MainFrame mf;
 	
+	/**
+	 * 构造方法，初始化聊天面板布局、配色样式与事件监听
+	 * @param mf 主窗口对象引用
+	 * @param client 网络通信客户端引用
+	 */
 	public ChatPanel(MainFrame mf, IClient client) {
 		this.mf = mf;
 		this.client = client;
@@ -66,6 +74,10 @@ public class ChatPanel extends JPanel {
 		});
 	}
 
+	/**
+	 * 布局动态缩放
+	 * 根据聊天面板当前实际宽度，动态计算倍率，按比例调整各控件字号与尺寸
+	 */
 	private void adjustChatUI() {
 		int w = getWidth();
 		if (w <= 0) return;
@@ -87,6 +99,10 @@ public class ChatPanel extends JPanel {
 		repaint();
 	}
 	
+	/**
+	 * 消息发送业务处理
+	 * 过滤空字符，若处于联机模式则通过 SocketClient 上报，并在本地追加回显
+	 */
 	private void sendMessage() {
 		String text = inField.getText().trim();
 		if (text.isEmpty()) return;
@@ -100,11 +116,19 @@ public class ChatPanel extends JPanel {
 		inField.setText("");
 	}
 
+	/**
+	 * 向历史文本域中追加一条聊天记录并自动保持滚动条在最底部
+	 * @param sender 发送者昵称
+	 * @param text 聊天文本内容
+	 */
 	public void appendMessage(String sender, String text) {
 		msgArea.append(sender + "：\n  " + text + "\n");
 		msgArea.setCaretPosition(msgArea.getDocument().getLength());
 	}
 
+	/**
+	 * 清空历史聊天记录
+	 */
 	public void clear() {
 		if (msgArea != null) {
 			msgArea.setText("");

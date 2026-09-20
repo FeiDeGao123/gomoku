@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 五子棋人机对战类
+ * 简单难度：贪心算法，人类思维
+ * 中等难度：评估表的启发式评估
+ * 困难难度： 极小化极大博弈，Alpha-Beta 剪枝，迭代加深搜索
+ */
 public class GameAI {
 	public static final int EASY = 1;
 	public static final int MID = 2;
@@ -37,10 +43,23 @@ public class GameAI {
 	private long timeLimitMs = 5000;
 	private boolean isTimeUp = false;
 
+	/**
+	 * 寻找最佳落子点
+	 * @param gc 棋盘裁决对象
+	 * @param aiColor AI 执子颜色
+	 * @return 最佳落子坐标 [x, y]
+	 */
 	public int[] findMove(GameCheck gc, int aiColor) {
 		return findMove(gc, aiColor, EASY);
 	}
 
+	/**
+	 * 寻找最佳落子点
+	 * @param gc 棋盘裁决对象
+	 * @param aiColor AI 执子颜色
+	 * @param level 难度等级 (EASY / MID / HARD)
+	 * @return 最佳落子坐标 [x, y]
+	 */
 	public int[] findMove(GameCheck gc, int aiColor, int level) {
 		if (level == HARD) {
 			return findMoveHard(gc, aiColor);
@@ -50,6 +69,10 @@ public class GameAI {
 		return findMoveEasy(gc, aiColor);
 	}
 
+	/**
+	 * 简单难度 AI，贪心落子
+	 * 优先占天元，从连五到连二倒序扫描，优先自己连线，其次封堵对手连线
+	 */
 	private int[] findMoveEasy(GameCheck gc, int aiColor) {
 		int humanColor = aiColor ^ 3;
 		int[][] grid = gc.getGrid();
@@ -86,6 +109,10 @@ public class GameAI {
 		return null;
 	}
 
+	/**
+	 * 中等难度 AI，权值评估算法
+	 * 位置矩阵加权，对人类活三、活四的防守拦截，相对于简单略强
+	 */
 	private int[] findMoveMid(GameCheck gc, int aiColor) {
 		int humanColor = aiColor ^ 3;
 		int[][] grid = gc.getGrid();
@@ -114,11 +141,15 @@ public class GameAI {
 		return new int[]{bestX, bestY};
 	}
 
+	/**
+	 * 困难难度 AI，极小化极大博弈树，Alpha-Beta 剪枝，迭代加深
+	 * 业余玩家几乎无解
+	 */
 	private int[] findMoveHard(GameCheck gc, int aiColor) {
 		int humanColor = aiColor ^ 3;
 		int[][] grid = gc.getGrid();
 		if (grid[7][7] == 0) return new int[]{7, 7};
-
+		// 能直接赢就下
 		for (int i = 0; i < GameCheck.SIZE; i++) {
 			for (int j = 0; j < GameCheck.SIZE; j++) {
 				if (grid[i][j] == 0 && hasNeighbor(grid, i, j, 1)) {
@@ -131,7 +162,7 @@ public class GameAI {
 				}
 			}
 		}
-
+		// 对手能直接赢，堵住对手
 		for (int i = 0; i < GameCheck.SIZE; i++) {
 			for (int j = 0; j < GameCheck.SIZE; j++) {
 				if (grid[i][j] == 0 && hasNeighbor(grid, i, j, 1)) {
@@ -144,37 +175,33 @@ public class GameAI {
 				}
 			}
 		}
-
 		searchStartTime = System.currentTimeMillis();
 		isTimeUp = false;
-
+		// 生成候选点并按静态得分降序排序，只取前 36 个点
 		List<MoveScore> candidateMoves = generateSortedMoves(grid, aiColor, humanColor, 36);
 		if (candidateMoves.isEmpty()) return findMoveMid(gc, aiColor);
-
 		int[] bestMove = new int[]{candidateMoves.get(0).x, candidateMoves.get(0).y};
-
+		// 迭代加深搜索，从 2 层递增探测至 6 层
 		for (int depth = 2; depth <= 6; depth += 2) {
 			int currentBestX = bestMove[0];
 			int currentBestY = bestMove[1];
 			int bestVal = Integer.MIN_VALUE;
 			int alpha = -50000000;
 			int beta = 50000000;
-
 			for (MoveScore m : candidateMoves) {
+				// 模拟下子
 				grid[m.x][m.y] = aiColor;
 				if (gc.checkEnd(m.x, m.y, aiColor)) {
 					grid[m.x][m.y] = 0;
 					return new int[]{m.x, m.y};
 				}
-
+				// 进入 Min 节点模拟人类
 				int val = minNode(gc, grid, depth - 1, alpha, beta, aiColor, humanColor);
-				grid[m.x][m.y] = 0;
-
+				grid[m.x][m.y] = 0; //回溯
 				if (System.currentTimeMillis() - searchStartTime > timeLimitMs) {
 					isTimeUp = true;
 					break;
 				}
-
 				if (val > bestVal) {
 					bestVal = val;
 					currentBestX = m.x;
@@ -182,7 +209,6 @@ public class GameAI {
 				}
 				alpha = Math.max(alpha, val);
 			}
-
 			if (isTimeUp) {
 				break;
 			} else {
@@ -190,11 +216,15 @@ public class GameAI {
 				bestMove[1] = currentBestY;
 			}
 		}
-
 		return bestMove;
 	}
 
+	/**
+	 * 博弈树 Max 节点
+	 * 最大化己方收益，Alpha 剪枝
+	 */
 	private int maxNode(GameCheck gc, int[][] grid, int depth, int alpha, int beta, int aiColor, int humanColor) {
+		// 深度达到叶子节点或超时，返回静态全局局势评分
 		if (depth == 0 || isTimeUp) {
 			return evaluateBoardGlobal(grid, aiColor, humanColor);
 		}
@@ -202,23 +232,21 @@ public class GameAI {
 			isTimeUp = true;
 			return evaluateBoardGlobal(grid, aiColor, humanColor);
 		}
-
+		// 取前 14 个最有价值的下法
 		List<MoveScore> moves = generateSortedMoves(grid, aiColor, humanColor, 14);
 		if (moves.isEmpty()) return 0;
-
 		int maxVal = Integer.MIN_VALUE;
 		for (MoveScore m : moves) {
 			grid[m.x][m.y] = aiColor;
 			if (gc.checkEnd(m.x, m.y, aiColor)) {
 				grid[m.x][m.y] = 0;
-				return FIVE - (6 - depth) * 10000;
+				return FIVE - (6 - depth) * 10000; // 步数衰减惩罚
 			}
-
 			int val = minNode(gc, grid, depth - 1, alpha, beta, aiColor, humanColor);
 			grid[m.x][m.y] = 0;
-
 			maxVal = Math.max(maxVal, val);
 			alpha = Math.max(alpha, val);
+			// 若当前分支价值已超过对手允许的最大上限，直接剪枝
 			if (beta <= alpha) {
 				break;
 			}
@@ -226,6 +254,10 @@ public class GameAI {
 		return maxVal;
 	}
 
+	/**
+	 * 博弈树 Min 节点
+	 * 假设人类高手会采取最优防守，最小化 AI 收益，实施 Beta 剪枝
+	 */
 	private int minNode(GameCheck gc, int[][] grid, int depth, int alpha, int beta, int aiColor, int humanColor) {
 		if (depth == 0 || isTimeUp) {
 			return evaluateBoardGlobal(grid, aiColor, humanColor);
@@ -234,10 +266,8 @@ public class GameAI {
 			isTimeUp = true;
 			return evaluateBoardGlobal(grid, aiColor, humanColor);
 		}
-
 		List<MoveScore> moves = generateSortedMoves(grid, humanColor, aiColor, 14);
 		if (moves.isEmpty()) return 0;
-
 		int minVal = Integer.MAX_VALUE;
 		for (MoveScore m : moves) {
 			grid[m.x][m.y] = humanColor;
@@ -245,12 +275,11 @@ public class GameAI {
 				grid[m.x][m.y] = 0;
 				return -FIVE + (6 - depth) * 10000;
 			}
-
 			int val = maxNode(gc, grid, depth - 1, alpha, beta, aiColor, humanColor);
 			grid[m.x][m.y] = 0;
-
 			minVal = Math.min(minVal, val);
 			beta = Math.min(beta, val);
+			// 若当前分支价值低于己方已知保底收益，直接剪枝
 			if (beta <= alpha) {
 				break;
 			}
@@ -258,6 +287,9 @@ public class GameAI {
 		return minVal;
 	}
 
+	/**
+	 * 棋盘全局局面静态评估函数
+	 */
 	private int evaluateBoardGlobal(int[][] grid, int aiColor, int humanColor) {
 		int aiScore = 0;
 		int humanScore = 0;
@@ -273,6 +305,9 @@ public class GameAI {
 		return (int)(aiScore * 1.05 - humanScore * 1.35);
 	}
 
+	/**
+	 * 生成并排序当前下法
+	 */
 	private List<MoveScore> generateSortedMoves(int[][] grid, int myCol, int oppCol, int maxCount) {
 		List<MoveScore> list = new ArrayList<>();
 		for (int i = 0; i < GameCheck.SIZE; i++) {
@@ -311,6 +346,9 @@ public class GameAI {
 		return new ArrayList<>(list.subList(0, limit));
 	}
 
+	/**
+	 * 评估棋盘上某点落子后的局部分
+	 */
 	private int evaluatePointOnBoard(int[][] grid, int x, int y, int color) {
 		grid[x][y] = color;
 		int score = evaluateStoneAt(grid, x, y, color);
@@ -318,6 +356,9 @@ public class GameAI {
 		return score;
 	}
 
+	/**
+	 * 评估单颗棋子在四个方向上的棋型得分
+	 */
 	private int evaluateStoneAt(int[][] grid, int x, int y, int color) {
 		int total = 0;
 		int goodThree = 0;
@@ -336,6 +377,9 @@ public class GameAI {
 		return total;
 	}
 
+	/**
+	 * 棋型匹配，1 己方，0 空位，- 敌方，# 出界
+	 */
 	private int analyzeLineScore(int[][] grid, int x, int y, int color, int dx, int dy) {
 		StringBuilder sb = new StringBuilder(9);
 		for (int i = -4; i <= 4; i++) {
@@ -364,6 +408,9 @@ public class GameAI {
 		return 0;
 	}
 
+	/**
+	 * 判断目标位置指定曼哈顿距离内是否已有棋子
+	 */
 	private boolean hasNeighbor(int[][] grid, int x, int y, int dist) {
 		int minX = Math.max(0, x - dist), maxX = Math.min(GameCheck.SIZE - 1, x + dist);
 		int minY = Math.max(0, y - dist), maxY = Math.min(GameCheck.SIZE - 1, y + dist);
@@ -375,6 +422,9 @@ public class GameAI {
 		return false;
 	}
 
+	/**
+	 * 封装位置和分数
+	 */
 	private static class MoveScore {
 		int x, y, score;
 		MoveScore(int x, int y, int score) {
