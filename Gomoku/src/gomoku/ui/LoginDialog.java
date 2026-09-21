@@ -7,6 +7,10 @@ import java.awt.event.ActionListener;
 import gomoku.dao.User;
 import gomoku.dao.DataProcessing;
 
+/**
+ * 用户登录与注册
+ * 继承自 JDialog，负责收集用户输入的账号与密码
+ */
 public class LoginDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
     private JTextField userField;
@@ -14,10 +18,17 @@ public class LoginDialog extends JDialog {
     private DataProcessing dp = new DataProcessing();
     private User loggedInUser = null;
 
+    /**
+     * 无参构造方法
+     */
     public LoginDialog() {
         this(null);
     }
 
+    /**
+     * 构造方法，初始化登录窗口界面组件与 GridBagLayout 布局
+     * @param parent 依赖的父级窗口
+     */
     public LoginDialog(Frame parent) {
         super(parent, "用户登录 / 注册", true);
         this.setSize(340, 220);
@@ -97,7 +108,11 @@ public class LoginDialog extends JDialog {
         panel.add(btnPanel, gbcBtnPanel);
         this.add(panel);
     }
-
+    
+    /**
+     * 阻塞式调起登录对话框并获取登录结果实体
+     * @return 登录成功返回当前玩家的 User 对象，若取消或关闭则返回 null
+     */
     public User showDialog() {
         this.setVisible(true);
         return loggedInUser;

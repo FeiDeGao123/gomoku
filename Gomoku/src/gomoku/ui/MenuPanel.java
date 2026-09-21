@@ -11,6 +11,10 @@ import gomoku.logic.GameAI;
 import gomoku.logic.GameCheck;
 import gomoku.network.IClient;
 
+/**
+ * 五子棋主菜单面板
+ * 继承自 JPanel，主菜单面板
+ */
 public class MenuPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private MainFrame pf;
@@ -23,10 +27,18 @@ public class MenuPanel extends JPanel {
 	private JButton historyBtn;
 	private JButton rankBtn;
 
+	/**
+	 * 无参构造方法
+	 */
 	public MenuPanel() {
 		this(null, null);
 	}
 
+	/**
+	 * 核心构造方法，初始化主菜单大厅界面布局
+	 * @param pf 主窗口容器引用
+	 * @param client 网络通信客户端引用
+	 */
 	public MenuPanel(MainFrame pf, IClient client) {
 		this.pf = pf;
 		this.setBackground(SettingDialog.MODE1);
@@ -170,6 +182,9 @@ public class MenuPanel extends JPanel {
 		});
 	}
 
+	/**
+	 * 布局动态缩放
+	 */
 	private void adjustResponsiveUI() {
 		int w = getWidth();
 		if (w <= 0) return;
@@ -192,6 +207,9 @@ public class MenuPanel extends JPanel {
 		repaint();
 	}
 
+	/**
+	 * 处理玩家身份操作
+	 */
 	private void handleUserAction() {
 		if (pf == null) return;
 		if (pf.getCurrUser() == null) {
@@ -208,6 +226,10 @@ public class MenuPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * 刷新顶部玩家信息状态
+	 * @param u 当前登录的用户实体
+	 */
 	public void updateUserInfo(User u) {
 		if (u == null) {
 			userLabel.setText("状态: 未登录");

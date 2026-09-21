@@ -12,12 +12,22 @@ import java.util.List;
 import gomoku.dao.MatchRecord;
 import gomoku.dao.DataProcessing;
 
+/**
+ * 个人历史对局查询
+ * 继承自 JDialog，展示当前登录用户的历史比赛记录
+ */
 public class HistoryDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private JTable table;
     private DefaultTableModel tableModel;
     private List<MatchRecord> recordList;
 
+    /**
+     * 构造方法，历史战绩、初始化表格视图并绑定交互事件
+     * @param parent 父级窗口容器
+     * @param userId 待查询玩家的用户唯一标识 ID
+     * @param dp 数据访问处理对象，负责多表联查
+     */
     public HistoryDialog(Frame parent, int userId, DataProcessing dp) {
         super(parent, "个人对局历史", true);
         this.setSize(720, 420);
@@ -80,6 +90,9 @@ public class HistoryDialog extends JDialog {
         this.add(btnPanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * 调出棋谱复盘对话，校验表格选中行索引，提取对应的 MatchRecord 对象并实例化 ReplayDialog
+     */
     private void openReplay() {
         int row = table.getSelectedRow();
         if (row >= 0 && row < recordList.size()) {

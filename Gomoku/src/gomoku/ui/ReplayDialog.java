@@ -13,6 +13,10 @@ import java.util.List;
 import gomoku.dao.MatchRecord;
 import gomoku.logic.GameCheck;
 
+/**
+ * 棋谱单步复盘与文件导出对话框
+ * 继承自 JDialog，提供历史对局重放与本地导出
+ */
 public class ReplayDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
     private List<int[]> stepsList = new ArrayList<>();
@@ -25,6 +29,11 @@ public class ReplayDialog extends JDialog {
     private final int RADIUS = 16;
     private final int DOT = 4;
 
+    /**
+     * 构造方法，解码十六进制棋谱、初始化重放
+     * @param parent 依赖的父级对话框
+     * @param record 待复盘的对局实体数据传输对象
+     */
     public ReplayDialog(Dialog parent, MatchRecord record) {
         super(parent, "棋谱复盘 - " + String.format("%08d", record.getDjh()) + " [" + record.getRes() + "]", true);
         this.record = record;
@@ -33,26 +42,20 @@ public class ReplayDialog extends JDialog {
         this.setResizable(false);
         this.setLayout(new BorderLayout());
         parseHexSteps(record.getStep());
-
         boardPanel = new ReplayPanel();
         this.add(boardPanel, BorderLayout.CENTER);
-
         JPanel controlPanel = new JPanel(new BorderLayout());
         controlPanel.setBackground(new Color(205, 168, 120));
-
         infoLabel = new JLabel("准备就绪", SwingConstants.CENTER);
         infoLabel.setFont(new Font("微软雅黑", Font.BOLD, 14));
         infoLabel.setBorder(BorderFactory.createEmptyBorder(6, 0, 4, 0));
-
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 8));
         btnPanel.setOpaque(false);
-
         JButton startBtn = new JButton("开局");
         JButton prevBtn = new JButton("上一步");
         JButton nextBtn = new JButton("下一步");
         JButton endBtn = new JButton("结束");
         JButton exportBtn = new JButton("导出棋谱txt");
-
         startBtn.addActionListener(e -> {
         	currStep = 0;
         	updateView();
@@ -87,6 +90,10 @@ public class ReplayDialog extends JDialog {
         updateView();
     }
 
+    /**
+     * 十六进制棋谱解码
+     * @param hex 数据库中存储的十六进制棋谱文本
+     */
     private void parseHexSteps(String hex) {
         if (hex == null || hex.trim().isEmpty()) return;
         hex = hex.trim().toUpperCase();
@@ -98,6 +105,9 @@ public class ReplayDialog extends JDialog {
         }
     }
 
+    /**
+     * 刷新复盘状态与标签
+     */
     private void updateView() {
         if (currStep == 0) {
             infoLabel.setText("初始空棋盘 (共 " + stepsList.size() + " 步)");
@@ -110,6 +120,9 @@ public class ReplayDialog extends JDialog {
         boardPanel.repaint();
     }
 
+    /**
+     * 将对战棋谱导出 txt
+     */
     private void exportToFile() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("保存棋谱文本文件");
@@ -144,6 +157,9 @@ public class ReplayDialog extends JDialog {
         }
     }
 
+    /**
+     * 复盘棋盘绘图面板
+     */
     private class ReplayPanel extends JPanel {
     	private static final long serialVersionUID = 1L;
         public ReplayPanel() {

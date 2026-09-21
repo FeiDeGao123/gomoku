@@ -14,6 +14,10 @@ import gomoku.logic.GameCheck;
 import gomoku.network.IClient;
 import gomoku.network.SocketClient;
 
+/**
+ * 五子棋控制主窗口
+ * 继承自 JFrame，程序启动入口
+ */
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
     private static float scaleFactor = 1.0f;
@@ -34,6 +38,9 @@ public class MainFrame extends JFrame {
     private User currUser;
     private DataProcessing dp = new DataProcessing();
     
+    /**
+     * 构造方法，初始化窗口、注入分层对象、组装布局、注册监听
+     */
     public MainFrame() {
         this.setTitle("网络五子棋");
         int frameW = (int) (920 * scaleFactor);
@@ -63,22 +70,42 @@ public class MainFrame extends JFrame {
         });
     }
 
+    /**
+     * 获取当前登录玩家对象
+     * @return 当前登录的 User 实体
+     */
     public User getCurrUser() {
     	return currUser;
     }
     
+    /**
+     * 获取数据访问对象引用
+     * @return DataProcessing 实例
+     */
     public DataProcessing getDataProcessing() {
     	return dp;
     }
 
+    /**
+     * 获取棋盘面板引用
+     * @return GridPanel 实例
+     */
     public GridPanel getGridPanel() {
         return gp;
     }
 
+    /**
+     * 获取聊天面板引用
+     * @return ChatPanel 实例
+     */
     public ChatPanel getChatPanel() {
         return chatPanel;
     }
 
+    /**
+     * 设置当前登录用户，刷新主菜单大厅的用户信息展示栏
+     * @param u 登录成功的 User 对象
+     */
     public void setCurrUser(User u) {
         this.currUser = u;
         if (mp != null) {
@@ -86,6 +113,11 @@ public class MainFrame extends JFrame {
         }
     }
 
+    /**
+     * 提交对局结算
+     * @param isWin    本局是否获胜
+     * @param hexSteps 十六进制棋谱坐标串
+     */
     public void settleMatch(boolean isWin, String hexSteps) {
         if (currUser != null) {
             dp.settleMatch(currUser.getID(), isWin, hexSteps);
@@ -96,6 +128,11 @@ public class MainFrame extends JFrame {
         }
     }
     
+    /**
+     * 创建对局界面
+     * BorderLayout，北部放控制工具条 bar，中间放棋盘 gp，东侧放聊天框 chatPanel
+     * @return 完整的游戏室卡片面板
+     */
     private JPanel createBar() {
     	JPanel option = new JPanel(new BorderLayout());
     	bar = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 8));
@@ -163,6 +200,9 @@ public class MainFrame extends JFrame {
         return option;
     }
 
+    /**
+     * 动态调整顶部工具条排版与字号大小，防止全屏或大窗口下工具条按钮字号过小
+     */
     private void adjustTopBarUI() {
         int w = getWidth();
         if (w <= 0 || bar == null) return;
@@ -181,17 +221,28 @@ public class MainFrame extends JFrame {
         bar.repaint();
     }
     
+    /**
+     * 启动单机双人对战，切换卡片至游戏区
+     */
     public void startLocalGame() {
     	gp.restart();
     	if (chatPanel != null) chatPanel.clear();
         cl.show(jp, "GAME");
     }
 
+    /**
+     * 联机匹配成功后调起，切换卡片至游戏区
+     */
     public void startOnlineGame() {
     	if (chatPanel != null) chatPanel.clear();
         cl.show(jp, "GAME");
     }
     
+    /**
+     * 启动人机对战模式
+     * @param playerColor 玩家执棋颜色
+     * @param level AI 难度等级 
+     */
     public void startPveGame(int playerColor, int level) {
         gp.startPve(playerColor, level);
         if (chatPanel != null) chatPanel.clear();
@@ -202,6 +253,10 @@ public class MainFrame extends JFrame {
         startPveGame(playerColor, gomoku.logic.GameAI.EASY);
     }
     
+    /**
+     * 从游戏区返回主菜单大厅
+     * 断开 Socket 连接、清空棋盘与聊天记录，并切换回 MENU 卡片
+     */
     public void back() {
     	client.disconnect();
     	gp.cleanReset();
@@ -209,6 +264,11 @@ public class MainFrame extends JFrame {
     	cl.show(jp, "MENU");
     }
     
+    /**
+     * 刷新顶部状态提示文字并控制重新开始按钮的可用状态
+     * @param text 提示文本
+     * @param restartFlag 重新开始按钮是否使能可用
+     */
     public void updateStatus(String text, boolean restartFlag) {
     	if (status != null) {
     		status.setText(text);
@@ -218,6 +278,10 @@ public class MainFrame extends JFrame {
     	}
     }
     
+    /**
+     * 主入口
+     * @param args 命令行启动参数
+     */
     public static void main(String[] args) {
     	System.setProperty("sun.java2d.uiScale.enabled", "true");
         System.setProperty("sun.java2d.dpiaware", "true");
@@ -228,6 +292,10 @@ public class MainFrame extends JFrame {
         });
     }
 
+    /**
+     * 通过 Toolkit 探测屏幕物理分辨率与 DPI，得到缩放倍率，
+     * 并遍历 UIManager 配置项，将所有 Swing 控件字体按比例放大
+     */
     private static void initScaleUI() {
         try {
             int dpi = Toolkit.getDefaultToolkit().getScreenResolution();

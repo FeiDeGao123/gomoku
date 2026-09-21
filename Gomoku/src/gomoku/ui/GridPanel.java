@@ -6,6 +6,7 @@ import javax.swing.*;
 import gomoku.logic.GameCheck;
 import gomoku.network.IClient;
 import gomoku.network.IListener;
+import gomoku.util.SoundPlayer;
 import gomoku.logic.GameAI;
 
 /**
@@ -563,7 +564,7 @@ public class GridPanel extends JPanel implements IListener {
 	}
 	
 	/**
-	 * 收到即时聊天消息，推送到 ChatPanel 文本域
+	 * 收到即时聊天消息，推送到 ChatPanel
 	 */
 	public void receiveChat(String msg) {
 		if (mf != null && mf.getChatPanel() != null) {

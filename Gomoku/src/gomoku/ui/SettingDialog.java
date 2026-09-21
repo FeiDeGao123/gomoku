@@ -1,10 +1,17 @@
 package gomoku.ui;
 
 import javax.swing.*;
+
+import gomoku.util.SoundPlayer;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * 游戏设置
+ * 继承自 JDialog，对局设置
+ */
 public class SettingDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     public static final Color MODE1 = new Color(222, 184, 135);
@@ -13,6 +20,10 @@ public class SettingDialog extends JDialog {
     private StringBuilder inputBuffer = new StringBuilder();
     private JLabel displayLabel;
 
+    /**
+     * 构造方法，初始化窗口
+     * @param mf 主窗口引用，用于更换 GridPanel 棋盘
+     */
     public SettingDialog(MainFrame mf) {
         super(mf, "游戏个性化设置", true);
         this.setSize(380, 520);
@@ -101,7 +112,6 @@ public class SettingDialog extends JDialog {
         clearBtn.setFont(new Font("微软雅黑", Font.PLAIN, 12));
         clearBtn.setFocusPainted(false);
         clearBtn.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 inputBuffer.setLength(0);
                 updateDisplay();
@@ -122,6 +132,10 @@ public class SettingDialog extends JDialog {
         this.add(bottomBar, BorderLayout.SOUTH);
     }
 
+    /**
+     * 刷新电子密码屏幕文本
+     * 若缓冲区为空显示默认占位符 "000000"，否则显示当前输入的数字串
+     */
     private void updateDisplay() {
         if (inputBuffer.length() == 0) {
             displayLabel.setText("000000");
@@ -130,12 +144,15 @@ public class SettingDialog extends JDialog {
         }
     }
 
+    /**
+     * 匹配特定字符串 "114514"，若输满 6 位非匹配密码则自动重置
+     */
     private void checkPassword() {
         String code = inputBuffer.toString();
         if (code.equals("114514")) {
             JOptionPane.showMessageDialog(this, 
                 "man!", 
-                "认证成功", 
+                "成功", 
                 JOptionPane.INFORMATION_MESSAGE);
             inputBuffer.setLength(0);
             updateDisplay();
