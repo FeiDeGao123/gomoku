@@ -10,7 +10,9 @@ import java.awt.event.ComponentEvent;
 import java.util.Enumeration;
 import gomoku.dao.User;
 import gomoku.dao.DataProcessing;
+import gomoku.dao.IDataProcessing;
 import gomoku.logic.GameCheck;
+import gomoku.logic.IGameCheck;
 import gomoku.network.IClient;
 import gomoku.network.SocketClient;
 
@@ -26,7 +28,8 @@ public class MainFrame extends JFrame {
     private MenuPanel mp;
     private GridPanel gp;
     private ChatPanel chatPanel;
-    private GameCheck gc;
+    private IGameCheck gc;
+    private IDataProcessing dp = new DataProcessing();
     private IClient client;
     private JButton backBtn;
     private JButton rstBtn;
@@ -36,7 +39,6 @@ public class MainFrame extends JFrame {
     private JLabel status;
     private JPanel bar;
     private User currUser;
-    private DataProcessing dp = new DataProcessing();
     
     /**
      * 构造方法，初始化窗口、注入分层对象、组装布局、注册监听
@@ -82,7 +84,7 @@ public class MainFrame extends JFrame {
      * 获取数据访问对象引用
      * @return DataProcessing 实例
      */
-    public DataProcessing getDataProcessing() {
+    public IDataProcessing getDataProcessing() {
     	return dp;
     }
 

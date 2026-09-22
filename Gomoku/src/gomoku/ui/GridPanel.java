@@ -3,11 +3,12 @@ package gomoku.ui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import gomoku.logic.GameCheck;
+import gomoku.logic.GameAI;
+import gomoku.logic.IGameAI;
+import gomoku.logic.IGameCheck;
 import gomoku.network.IClient;
 import gomoku.network.IListener;
 import gomoku.util.SoundPlayer;
-import gomoku.logic.GameAI;
 
 /**
  * 五子棋棋盘图形交互面板
@@ -18,8 +19,8 @@ public class GridPanel extends JPanel implements IListener {
 	public static final int LOCAL = 1;
 	public static final int ONLINE = 2;
 	public static final int PVE = 3;
-	private GameAI ai = new GameAI();
-	private GameCheck gc;
+	private IGameAI ai = new GameAI();
+	private IGameCheck gc;
 	private MainFrame mf;
 	private IClient client;
 	private int mode = LOCAL;
@@ -37,7 +38,7 @@ public class GridPanel extends JPanel implements IListener {
 	private int radius = 20;
 	private int dot = 5;
 	private boolean hasUndone = false;
-	private int currentAiLevel = GameAI.EASY;
+	private int currentAiLevel = IGameAI.EASY;
 	
 	/**
 	 * 构造方法，注入核心依赖、重置棋盘状态并注册鼠标落子监听器
@@ -45,7 +46,7 @@ public class GridPanel extends JPanel implements IListener {
 	 * @param gc 棋盘逻辑裁判对象
 	 * @param client 网络通信客户端
 	 */
-	public GridPanel(MainFrame mf, GameCheck gc, IClient client) {
+	public GridPanel(MainFrame mf, IGameCheck gc, IClient client) {
 		this.mf = mf;
 		this.gc = gc;
 		this.client = client;
@@ -67,7 +68,7 @@ public class GridPanel extends JPanel implements IListener {
 						repaint();
 						if (gc.checkEnd(x, y, currColor)) {
 							gameOver = true;
-							String winner = currColor == GameCheck.BLACK ? "黑棋" : "白棋";
+							String winner = currColor == IGameCheck.BLACK ? "黑棋" : "白棋";
 							JOptionPane.showMessageDialog(mf, "恭喜，" + winner + " 获胜！");
 						} 
 						else if (gc.allPushed()) {
@@ -75,7 +76,7 @@ public class GridPanel extends JPanel implements IListener {
 							JOptionPane.showMessageDialog(mf, "棋盘已下满，和棋平局");
 						}
 						else {
-							currColor = (gc.stkSize() % 2 == 0) ? GameCheck.BLACK : GameCheck.WHITE;
+							currColor = (gc.stkSize() % 2 == 0) ? IGameCheck.BLACK : IGameCheck.WHITE;
 							syncStatus();
 						}
 					}
@@ -103,7 +104,7 @@ public class GridPanel extends JPanel implements IListener {
 							JOptionPane.showMessageDialog(mf, "棋盘已下满，和棋平局");
 						}
 						else {
-							currColor = (gc.stkSize() % 2 == 0) ? GameCheck.BLACK : GameCheck.WHITE;
+							currColor = (gc.stkSize() % 2 == 0) ? IGameCheck.BLACK : IGameCheck.WHITE;
 							syncStatus();
 						}
 					}
@@ -173,8 +174,8 @@ public class GridPanel extends JPanel implements IListener {
 		int h = getHeight();
 		if (w <= 0 || h <= 0) return;
 		int minSide = (int) (Math.min(w, h) * 0.90);
-		this.sq = Math.max(20, minSide / (GameCheck.SIZE - 1));
-		int boardSize = sq * (GameCheck.SIZE - 1);
+		this.sq = Math.max(20, minSide / (IGameCheck.SIZE - 1));
+		int boardSize = sq * (IGameCheck.SIZE - 1);
 		this.edgeX = (w - boardSize) / 2;
 		this.edgeY = (h - boardSize) / 2;
 		this.radius = (int) (sq * 0.40);
@@ -192,9 +193,9 @@ public class GridPanel extends JPanel implements IListener {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setColor(new Color(60, 40, 20));
 		g2d.setStroke(new BasicStroke(1.2f));
-		for (int i = 0; i < GameCheck.SIZE; i++) {
-			g2d.drawLine(edgeX, edgeY + i * sq, edgeX + (GameCheck.SIZE - 1) * sq, edgeY + i * sq);
-			g2d.drawLine(edgeX + i * sq, edgeY, edgeX + i * sq, edgeY + (GameCheck.SIZE - 1) * sq);
+		for (int i = 0; i < IGameCheck.SIZE; i++) {
+			g2d.drawLine(edgeX, edgeY + i * sq, edgeX + (IGameCheck.SIZE - 1) * sq, edgeY + i * sq);
+			g2d.drawLine(edgeX + i * sq, edgeY, edgeX + i * sq, edgeY + (IGameCheck.SIZE - 1) * sq);
 		}
 		int stars[][] = {{7, 7}, {3, 3}, {11, 3}, {3, 11}, {11, 11}};
 		for (int[] star : stars) {
@@ -203,12 +204,12 @@ public class GridPanel extends JPanel implements IListener {
 			g2d.fillOval(cx, cy, dot * 2, dot * 2);
 		}
 		int grid[][] = gc.getGrid();
-		for (int i = 0; i < GameCheck.SIZE; i++) {
-			for (int j = 0; j < GameCheck.SIZE; j++) {
+		for (int i = 0; i < IGameCheck.SIZE; i++) {
+			for (int j = 0; j < IGameCheck.SIZE; j++) {
 				if (grid[i][j] != 0) {
 					int cx = edgeX + i * sq;
 					int cy = edgeY + j * sq;
-					GomokuPaint.drawPiece(g2d, cx, cy, radius, grid[i][j] == GameCheck.BLACK);
+					GomokuPaint.drawPiece(g2d, cx, cy, radius, grid[i][j] == IGameCheck.BLACK);
 				}
 			}
 		}
@@ -231,7 +232,7 @@ public class GridPanel extends JPanel implements IListener {
 		preY = -1;
 		this.mode = LOCAL;
 		gc.reset();
-        currColor = GameCheck.BLACK;
+        currColor = IGameCheck.BLACK;
         gameOver = false;
         hasUndone = false;
         repaint();
@@ -248,7 +249,7 @@ public class GridPanel extends JPanel implements IListener {
 		preY = -1;
 		this.mode = LOCAL;
 		gc.reset();
-		currColor = GameCheck.BLACK;
+		currColor = IGameCheck.BLACK;
 		gameOver = false;
 		hasUndone = false;
 		repaint();
@@ -297,14 +298,14 @@ public class GridPanel extends JPanel implements IListener {
 		}
 		this.mode = ONLINE;
 		this.myColor = color;
-		this.currColor = GameCheck.BLACK;
+		this.currColor = IGameCheck.BLACK;
 		gc.reset();
 		this.gameOver = false;
 		this.hasUndone = false;
 		repaint();
 		mf.startOnlineGame();
 		syncStatus();
-		String role = (color == GameCheck.BLACK) ? "黑棋(先手)" : "白棋(后手)";
+		String role = (color == IGameCheck.BLACK) ? "黑棋(先手)" : "白棋(后手)";
 		JOptionPane.showMessageDialog(mf, "匹配成功！对局开始，你执: " + role);
 	}
 
@@ -320,11 +321,11 @@ public class GridPanel extends JPanel implements IListener {
 		this.mode = PVE;
 		this.myColor = playerColor;
 		gc.reset();
-		currColor = GameCheck.BLACK;
+		currColor = IGameCheck.BLACK;
 		gameOver = false;
 		repaint();
-		final String diffName = (level == GameAI.HARD) ? "困难" : ((level == GameAI.MID) ? "普通" : "简单");
-		if (myColor == GameCheck.BLACK) {
+		final String diffName = (level == IGameAI.HARD) ? "困难" : ((level == IGameAI.MID) ? "普通" : "简单");
+		if (myColor == IGameCheck.BLACK) {
 			if (mf != null) {
 				mf.updateStatus("[人机对战(" + diffName + ") - 你执黑棋] [轮到你了]", true);
 			}
@@ -334,7 +335,7 @@ public class GridPanel extends JPanel implements IListener {
 			}
 			Timer timer = new Timer(120, new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					int aiColor = GameCheck.BLACK;
+					int aiColor = IGameCheck.BLACK;
 					int[] pos = ai.findMove(gc, aiColor, currentAiLevel);
 					if (pos != null) {
 						gc.checkPush(pos[0], pos[1], aiColor);
@@ -342,7 +343,7 @@ public class GridPanel extends JPanel implements IListener {
 						preX = pos[0];
 						preY = pos[1];
 						repaint();
-						currColor = GameCheck.WHITE;
+						currColor = IGameCheck.WHITE;
 						if (mf != null) {
 							mf.updateStatus("[人机对战(" + diffName + ") - 你执白棋] [轮到你了]", true);
 						}
@@ -383,7 +384,7 @@ public class GridPanel extends JPanel implements IListener {
 				JOptionPane.showMessageDialog(mf, "棋盘已下满，和棋平局");
 			}
 			else {
-				currColor = (gc.stkSize() % 2 == 0) ? GameCheck.BLACK : GameCheck.WHITE;
+				currColor = (gc.stkSize() % 2 == 0) ? IGameCheck.BLACK : IGameCheck.WHITE;
 				syncStatus();
 			}
 		}
@@ -431,7 +432,7 @@ public class GridPanel extends JPanel implements IListener {
 		}
 		if (mode == LOCAL) {
 			executeUndoSteps(1);
-			currColor = (gc.stkSize() % 2 == 0) ? GameCheck.BLACK : GameCheck.WHITE;
+			currColor = (gc.stkSize() % 2 == 0) ? IGameCheck.BLACK : IGameCheck.WHITE;
 			syncStatus();
 		} 
 		else if (mode == PVE) {
@@ -492,20 +493,20 @@ public class GridPanel extends JPanel implements IListener {
 	 */
 	private void syncStatus() {
 		if (mode == ONLINE) {
-			String myRole = (myColor == GameCheck.BLACK) ? "黑棋" : "白棋";
+			String myRole = (myColor == IGameCheck.BLACK) ? "黑棋" : "白棋";
 			if (currColor == myColor) {
 				mf.updateStatus("[联机对战 - 你执" + myRole + "] 你的回合", false);
 			} else {
 				mf.updateStatus("[联机对战 - 你执" + myRole + "] 等待对手", false);
 			}
 		} else if (mode == LOCAL) {
-			String nextRole = (currColor == GameCheck.BLACK) ? "黑棋" : "白棋";
+			String nextRole = (currColor == IGameCheck.BLACK) ? "黑棋" : "白棋";
 			mf.updateStatus("[单机模式] 轮到 " + nextRole + " 落子", true);
 		} 
 		else if (mode == PVE) {
-			String myRole = (myColor == GameCheck.BLACK) ? "黑棋" : "白棋";
+			String myRole = (myColor == IGameCheck.BLACK) ? "黑棋" : "白棋";
 			String diffName = "简单";
-			if (currentAiLevel == GameAI.MID) diffName = "普通";
+			if (currentAiLevel == IGameAI.MID) diffName = "普通";
 			else if (currentAiLevel == GameAI.HARD) diffName = "困难";
 			mf.updateStatus("[人机对战(" + diffName + ") - 你执" + myRole + "] [轮到你了]", true);
 		}
@@ -548,8 +549,8 @@ public class GridPanel extends JPanel implements IListener {
 		if (choice != JOptionPane.YES_OPTION) return;
 		gameOver = true;
 		if (mode == LOCAL) {
-			String loser = (currColor == GameCheck.BLACK) ? "黑棋" : "白棋";
-			String winner = (currColor == GameCheck.BLACK) ? "白棋" : "黑棋";
+			String loser = (currColor == IGameCheck.BLACK) ? "黑棋" : "白棋";
+			String winner = (currColor == IGameCheck.BLACK) ? "白棋" : "黑棋";
 			JOptionPane.showMessageDialog(mf, loser + " 认输，恭喜 " + winner + " 获胜！");
 			mf.updateStatus("[单机模式] " + winner + " 获胜！", true);
 		} else if (mode == PVE) {

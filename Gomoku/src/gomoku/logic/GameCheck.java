@@ -6,7 +6,7 @@ import java.util.Stack;
  * 五子棋判定类
  * 负责棋盘网格、落子合法校验、连珠判定、平局检测、悔棋
  */
-public class GameCheck {
+public class GameCheck implements IGameCheck {
 	public static final int SIZE = 15;
 	public static final int BLACK = 1;
 	public static final int WHITE = 2;

@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import gomoku.dao.User;
 import gomoku.dao.DataProcessing;
+import gomoku.dao.IDataProcessing;
 
 /**
  * ÓÃ»§µÇÂ¼Óë×¢²á
@@ -15,7 +16,7 @@ public class LoginDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
     private JTextField userField;
     private JPasswordField passField;
-    private DataProcessing dp = new DataProcessing();
+    private IDataProcessing dp = new DataProcessing();
     private User loggedInUser = null;
 
     /**

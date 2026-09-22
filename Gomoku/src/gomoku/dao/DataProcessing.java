@@ -9,7 +9,7 @@ import java.util.List;
  * 用户身份认证、战绩持久化结算、历史棋谱提取、排行榜处理
  * 遵循二级封锁协议与两段锁协议
  */
-public class DataProcessing {
+public class DataProcessing implements IDataProcessing {
 	/**
      * 用户登录
      * @param name 用户名

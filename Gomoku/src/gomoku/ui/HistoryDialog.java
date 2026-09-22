@@ -10,7 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import gomoku.dao.MatchRecord;
-import gomoku.dao.DataProcessing;
+import gomoku.dao.IDataProcessing;
 
 /**
  * 个人历史对局查询
@@ -28,7 +28,7 @@ public class HistoryDialog extends JDialog {
      * @param userId 待查询玩家的用户唯一标识 ID
      * @param dp 数据访问处理对象，负责多表联查
      */
-    public HistoryDialog(Frame parent, int userId, DataProcessing dp) {
+    public HistoryDialog(Frame parent, int userId, IDataProcessing dp) {
         super(parent, "个人对局历史", true);
         this.setSize(720, 420);
         this.setLocationRelativeTo(parent);
@@ -52,7 +52,6 @@ public class HistoryDialog extends JDialog {
                 r.getMatchTime()
             });
         }
-
         table = new JTable(tableModel);
         table.setRowHeight(28);
         table.setFont(new Font("微软雅黑", Font.PLAIN, 13));

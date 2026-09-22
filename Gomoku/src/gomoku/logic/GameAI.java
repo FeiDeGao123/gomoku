@@ -8,9 +8,9 @@ import java.util.List;
  * 五子棋人机对战类
  * 简单难度：贪心算法，人类思维
  * 中等难度：评估表的启发式评估
- * 困难难度： 极小化极大博弈，Alpha-Beta 剪枝，迭代加深搜索
+ * 困难难度：极小化极大博弈，Alpha-Beta 剪枝，迭代加深搜索
  */
-public class GameAI {
+public class GameAI implements IGameAI {
 	public static final int EASY = 1;
 	public static final int MID = 2;
 	public static final int HARD = 3;
@@ -40,27 +40,28 @@ public class GameAI {
 		{0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0}
 	};
 	private long searchStartTime;
-	private long timeLimitMs = 5000;
+	private long timeLimitMs = 3000;
 	private boolean isTimeUp = false;
+	private final char[] lineBuf = new char[9];
 
 	/**
 	 * 寻找最佳落子点
-	 * @param gc 棋盘裁决对象
+	 * @param gc 逻辑判断对象
 	 * @param aiColor AI 执子颜色
 	 * @return 最佳落子坐标 [x, y]
 	 */
-	public int[] findMove(GameCheck gc, int aiColor) {
-		return findMove(gc, aiColor, EASY);
+	public int[] findMove(IGameCheck gc, int aiColor) {
+		return findMove(gc, aiColor, HARD);
 	}
 
 	/**
 	 * 寻找最佳落子点
-	 * @param gc 棋盘裁决对象
+	 * @param gc 逻辑判断对象
 	 * @param aiColor AI 执子颜色
 	 * @param level 难度等级 (EASY / MID / HARD)
 	 * @return 最佳落子坐标 [x, y]
 	 */
-	public int[] findMove(GameCheck gc, int aiColor, int level) {
+	public int[] findMove(IGameCheck gc, int aiColor, int level) {
 		if (level == HARD) {
 			return findMoveHard(gc, aiColor);
 		} else if (level == MID) {
@@ -71,28 +72,26 @@ public class GameAI {
 
 	/**
 	 * 简单难度 AI，贪心落子
-	 * 优先占天元，从连五到连二倒序扫描，优先自己连线，其次封堵对手连线
 	 */
-	private int[] findMoveEasy(GameCheck gc, int aiColor) {
+	private int[] findMoveEasy(IGameCheck gc, int aiColor) {
 		int humanColor = aiColor ^ 3;
 		int[][] grid = gc.getGrid();
 		if (grid[7][7] == 0) return new int[]{7, 7};
-
 		for (int len = 5; len >= 2; len--) {
-		    for (int i = 0; i < GameCheck.SIZE; i++) {
-		        for (int j = 0; j < GameCheck.SIZE; j++) {
-		            if (grid[i][j] == 0 && gc.countMax(i, j, aiColor) >= len) {
-		                return new int[]{i, j};
-		            }
-		        }
-		    }
-		    for (int i = 0; i < GameCheck.SIZE; i++) {
-		        for (int j = 0; j < GameCheck.SIZE; j++) {
-		            if (grid[i][j] == 0 && gc.countMax(i, j, humanColor) >= len) {
-		                return new int[]{i, j};
-		            }
-		        }
-		    }
+			for (int i = 0; i < GameCheck.SIZE; i++) {
+				for (int j = 0; j < GameCheck.SIZE; j++) {
+					if (grid[i][j] == 0 && gc.countMax(i, j, aiColor) >= len) {
+						return new int[]{i, j};
+					}
+				}
+			}
+			for (int i = 0; i < GameCheck.SIZE; i++) {
+				for (int j = 0; j < GameCheck.SIZE; j++) {
+					if (grid[i][j] == 0 && gc.countMax(i, j, humanColor) >= len) {
+						return new int[]{i, j};
+					}
+				}
+			}
 		}
 		for (int i = 0; i < GameCheck.SIZE; i++) {
 			for (int j = 0; j < GameCheck.SIZE; j++) {
@@ -111,9 +110,8 @@ public class GameAI {
 
 	/**
 	 * 中等难度 AI，权值评估算法
-	 * 位置矩阵加权，对人类活三、活四的防守拦截，相对于简单略强
 	 */
-	private int[] findMoveMid(GameCheck gc, int aiColor) {
+	private int[] findMoveMid(IGameCheck gc, int aiColor) {
 		int humanColor = aiColor ^ 3;
 		int[][] grid = gc.getGrid();
 		if (grid[7][7] == 0) return new int[]{7, 7};
@@ -143,12 +141,21 @@ public class GameAI {
 
 	/**
 	 * 困难难度 AI，极小化极大博弈树，Alpha-Beta 剪枝，迭代加深
-	 * 业余玩家几乎无解
 	 */
-	private int[] findMoveHard(GameCheck gc, int aiColor) {
+	private int[] findMoveHard(IGameCheck gc, int aiColor) {
 		int humanColor = aiColor ^ 3;
 		int[][] grid = gc.getGrid();
 		if (grid[7][7] == 0) return new int[]{7, 7};
+		int stoneCount = 0;
+		for (int i = 0; i < GameCheck.SIZE; i++) {
+			for (int j = 0; j < GameCheck.SIZE; j++) {
+				if (grid[i][j] != 0) stoneCount++;
+			}
+		}
+		if (stoneCount == 1 && grid[7][7] == humanColor) {
+			return new int[]{6, 6};
+		}
+
 		// 能直接赢就下
 		for (int i = 0; i < GameCheck.SIZE; i++) {
 			for (int j = 0; j < GameCheck.SIZE; j++) {
@@ -162,6 +169,7 @@ public class GameAI {
 				}
 			}
 		}
+
 		// 对手能直接赢，堵住对手
 		for (int i = 0; i < GameCheck.SIZE; i++) {
 			for (int j = 0; j < GameCheck.SIZE; j++) {
@@ -177,29 +185,34 @@ public class GameAI {
 		}
 		searchStartTime = System.currentTimeMillis();
 		isTimeUp = false;
-		// 生成候选点并按静态得分降序排序，只取前 36 个点
-		List<MoveScore> candidateMoves = generateSortedMoves(grid, aiColor, humanColor, 36);
+		List<MoveScore> candidateMoves = generateSortedMoves(grid, aiColor, humanColor, 20);
 		if (candidateMoves.isEmpty()) return findMoveMid(gc, aiColor);
 		int[] bestMove = new int[]{candidateMoves.get(0).x, candidateMoves.get(0).y};
-		// 迭代加深搜索，从 2 层递增探测至 6 层
-		for (int depth = 2; depth <= 6; depth += 2) {
+		// 迭代加深搜索
+		for (int depth = 2; depth <= 10; depth += 2) {
 			int currentBestX = bestMove[0];
 			int currentBestY = bestMove[1];
 			int bestVal = Integer.MIN_VALUE;
 			int alpha = -50000000;
 			int beta = 50000000;
+			// 将上一轮迭代找到的最佳点排在首位，触发最大概率的 Alpha 剪枝
+			for (int k = 0; k < candidateMoves.size(); k++) {
+				if (candidateMoves.get(k).x == currentBestX && candidateMoves.get(k).y == currentBestY) {
+					MoveScore pv = candidateMoves.remove(k);
+					candidateMoves.add(0, pv);
+					break;
+				}
+			}
 			for (MoveScore m : candidateMoves) {
-				// 模拟下子
 				grid[m.x][m.y] = aiColor;
 				if (gc.checkEnd(m.x, m.y, aiColor)) {
 					grid[m.x][m.y] = 0;
 					return new int[]{m.x, m.y};
 				}
-				// 进入 Min 节点模拟人类
 				int val = minNode(gc, grid, depth - 1, alpha, beta, aiColor, humanColor);
-				grid[m.x][m.y] = 0; //回溯
-				if (System.currentTimeMillis() - searchStartTime > timeLimitMs) {
-					isTimeUp = true;
+				grid[m.x][m.y] = 0;
+
+				if (isTimeUp) {
 					break;
 				}
 				if (val > bestVal) {
@@ -221,10 +234,8 @@ public class GameAI {
 
 	/**
 	 * 博弈树 Max 节点
-	 * 最大化己方收益，Alpha 剪枝
 	 */
-	private int maxNode(GameCheck gc, int[][] grid, int depth, int alpha, int beta, int aiColor, int humanColor) {
-		// 深度达到叶子节点或超时，返回静态全局局势评分
+	private int maxNode(IGameCheck gc, int[][] grid, int depth, int alpha, int beta, int aiColor, int humanColor) {
 		if (depth == 0 || isTimeUp) {
 			return evaluateBoardGlobal(grid, aiColor, humanColor);
 		}
@@ -232,21 +243,21 @@ public class GameAI {
 			isTimeUp = true;
 			return evaluateBoardGlobal(grid, aiColor, humanColor);
 		}
-		// 取前 14 个最有价值的下法
-		List<MoveScore> moves = generateSortedMoves(grid, aiColor, humanColor, 14);
+		// 只看最优秀的 4~6 个点，减少状态数
+		int count = (depth >= 7) ? 4 : ((depth >= 5) ? 6 : ((depth >= 3) ? 10 : 14));
+		List<MoveScore> moves = generateSortedMoves(grid, aiColor, humanColor, count);
 		if (moves.isEmpty()) return 0;
 		int maxVal = Integer.MIN_VALUE;
 		for (MoveScore m : moves) {
 			grid[m.x][m.y] = aiColor;
 			if (gc.checkEnd(m.x, m.y, aiColor)) {
 				grid[m.x][m.y] = 0;
-				return FIVE - (6 - depth) * 10000; // 步数衰减惩罚
+				return FIVE - (10 - depth) * 10000;
 			}
 			int val = minNode(gc, grid, depth - 1, alpha, beta, aiColor, humanColor);
 			grid[m.x][m.y] = 0;
 			maxVal = Math.max(maxVal, val);
 			alpha = Math.max(alpha, val);
-			// 若当前分支价值已超过对手允许的最大上限，直接剪枝
 			if (beta <= alpha) {
 				break;
 			}
@@ -256,9 +267,8 @@ public class GameAI {
 
 	/**
 	 * 博弈树 Min 节点
-	 * 假设人类高手会采取最优防守，最小化 AI 收益，实施 Beta 剪枝
 	 */
-	private int minNode(GameCheck gc, int[][] grid, int depth, int alpha, int beta, int aiColor, int humanColor) {
+	private int minNode(IGameCheck gc, int[][] grid, int depth, int alpha, int beta, int aiColor, int humanColor) {
 		if (depth == 0 || isTimeUp) {
 			return evaluateBoardGlobal(grid, aiColor, humanColor);
 		}
@@ -266,20 +276,22 @@ public class GameAI {
 			isTimeUp = true;
 			return evaluateBoardGlobal(grid, aiColor, humanColor);
 		}
-		List<MoveScore> moves = generateSortedMoves(grid, humanColor, aiColor, 14);
+		// 只防守最危险的 4~6 个点
+		int count = (depth >= 7) ? 4 : ((depth >= 5) ? 6 : ((depth >= 3) ? 10 : 14));
+		List<MoveScore> moves = generateSortedMoves(grid, humanColor, aiColor, count);
 		if (moves.isEmpty()) return 0;
 		int minVal = Integer.MAX_VALUE;
+
 		for (MoveScore m : moves) {
 			grid[m.x][m.y] = humanColor;
 			if (gc.checkEnd(m.x, m.y, humanColor)) {
 				grid[m.x][m.y] = 0;
-				return -FIVE + (6 - depth) * 10000;
+				return -FIVE + (10 - depth) * 10000;
 			}
 			int val = maxNode(gc, grid, depth - 1, alpha, beta, aiColor, humanColor);
 			grid[m.x][m.y] = 0;
 			minVal = Math.min(minVal, val);
 			beta = Math.min(beta, val);
-			// 若当前分支价值低于己方已知保底收益，直接剪枝
 			if (beta <= alpha) {
 				break;
 			}
@@ -302,7 +314,7 @@ public class GameAI {
 				}
 			}
 		}
-		return (int)(aiScore * 1.05 - humanScore * 1.35);
+		return (int)(aiScore * 1.0 - humanScore * 1.6);
 	}
 
 	/**
@@ -310,9 +322,11 @@ public class GameAI {
 	 */
 	private List<MoveScore> generateSortedMoves(int[][] grid, int myCol, int oppCol, int maxCount) {
 		List<MoveScore> list = new ArrayList<>();
+		int searchDist = (maxCount <= 10) ? 1 : 2;
+
 		for (int i = 0; i < GameCheck.SIZE; i++) {
 			for (int j = 0; j < GameCheck.SIZE; j++) {
-				if (grid[i][j] != 0 || !hasNeighbor(grid, i, j, 2)) continue;
+				if (grid[i][j] != 0 || !hasNeighbor(grid, i, j, searchDist)) continue;
 				int atk = evaluatePointOnBoard(grid, i, j, myCol);
 				int def = evaluatePointOnBoard(grid, i, j, oppCol);
 				if (atk >= FIVE) {
@@ -325,7 +339,6 @@ public class GameAI {
 					list.add(new MoveScore(i, j, Integer.MAX_VALUE - 1));
 					return list;
 				}
-
 				int score;
 				if (def >= GOOD_FOUR) {
 					score = def * 5;
@@ -336,7 +349,7 @@ public class GameAI {
 				} else if (atk >= GOOD_THREE) {
 					score = (int)(atk * 2.5 + def);
 				} else {
-					score = (int)(atk * 1.0 + def * 1.35) + POS_VALUE[i][j] * 4;
+					score = (int)(atk * 1.0 + def * 1.4) + POS_VALUE[i][j] * 4;
 				}
 				list.add(new MoveScore(i, j, score));
 			}
@@ -378,33 +391,52 @@ public class GameAI {
 	}
 
 	/**
+	 * 棋形匹配匹配函数
+	 */
+	private boolean match(char[] buf, String pat) {
+		int m = pat.length();
+		for (int i = 0; i <= 9 - m; i++) {
+			boolean ok = true;
+			for (int j = 0; j < m; j++) {
+				if (buf[i + j] != pat.charAt(j)) {
+					ok = false;
+					break;
+				}
+			}
+			if (ok) return true;
+		}
+		return false;
+	}
+
+	/**
 	 * 棋型匹配，1 己方，0 空位，- 敌方，# 出界
 	 */
 	private int analyzeLineScore(int[][] grid, int x, int y, int color, int dx, int dy) {
-		StringBuilder sb = new StringBuilder(9);
+		int idx = 0;
 		for (int i = -4; i <= 4; i++) {
 			int nx = x + i * dx;
 			int ny = y + i * dy;
 			if (nx < 0 || nx >= GameCheck.SIZE || ny < 0 || ny >= GameCheck.SIZE) {
-				sb.append('#');
+				lineBuf[idx++] = '#';
 			} else {
-				if (grid[nx][ny] == color) sb.append('1');
-				else if (grid[nx][ny] == 0) sb.append('0');
-				else sb.append('-');
+				int val = grid[nx][ny];
+				if (val == color) lineBuf[idx++] = '1';
+				else if (val == 0) lineBuf[idx++] = '0';
+				else lineBuf[idx++] = '-';
 			}
 		}
-		String s = sb.toString();
-		if (s.contains("11111")) return FIVE;
-		if (s.contains("011110")) return GOOD_FOUR;
-		if (s.contains("01111-") || s.contains("-11110") || s.contains("01111#") || s.contains("#11110") ||
-		    s.contains("10111") || s.contains("11011") || s.contains("11101")) return BAD_FOUR;
-		if (s.contains("01110") || s.contains("010110") || s.contains("011010")) return GOOD_THREE;
-		if (s.contains("00111-") || s.contains("-11100") || s.contains("00111#") || s.contains("#11100") ||
-		    s.contains("01011-") || s.contains("-11010") || s.contains("01101-") || s.contains("-10110") ||
-		    s.contains("10011") || s.contains("11001") || s.contains("10101")) return BAD_THREE;
-		if (s.contains("00110") || s.contains("01100") || s.contains("01010") || s.contains("010010") || s.contains("001010") || s.contains("010100")) return GOOD_TWO;
-		if (s.contains("00011-") || s.contains("-11000") || s.contains("00011#") || s.contains("#11000") ||
-		    s.contains("00101-") || s.contains("-10100") || s.contains("01001-") || s.contains("-10010")) return BAD_TWO;
+
+		if (match(lineBuf, "11111")) return FIVE;
+		if (match(lineBuf, "011110")) return GOOD_FOUR;
+		if (match(lineBuf, "01111-") || match(lineBuf, "-11110") || match(lineBuf, "01111#") || match(lineBuf, "#11110") ||
+		    match(lineBuf, "10111") || match(lineBuf, "11011") || match(lineBuf, "11101")) return BAD_FOUR;
+		if (match(lineBuf, "01110") || match(lineBuf, "010110") || match(lineBuf, "011010")) return GOOD_THREE;
+		if (match(lineBuf, "00111-") || match(lineBuf, "-11100") || match(lineBuf, "00111#") || match(lineBuf, "#11100") ||
+		    match(lineBuf, "01011-") || match(lineBuf, "-11010") || match(lineBuf, "01101-") || match(lineBuf, "-10110") ||
+		    match(lineBuf, "10011") || match(lineBuf, "11001") || match(lineBuf, "10101")) return BAD_THREE;
+		if (match(lineBuf, "00110") || match(lineBuf, "01100") || match(lineBuf, "01010") || match(lineBuf, "010010") || match(lineBuf, "001010") || match(lineBuf, "010100")) return GOOD_TWO;
+		if (match(lineBuf, "00011-") || match(lineBuf, "-11000") || match(lineBuf, "00011#") || match(lineBuf, "#11000") ||
+		    match(lineBuf, "00101-") || match(lineBuf, "-10100") || match(lineBuf, "01001-") || match(lineBuf, "-10010")) return BAD_TWO;
 		return 0;
 	}
 

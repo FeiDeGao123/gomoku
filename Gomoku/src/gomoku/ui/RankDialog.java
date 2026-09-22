@@ -6,7 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 import gomoku.dao.User;
-import gomoku.dao.DataProcessing;
+import gomoku.dao.IDataProcessing;
 
 /**
  * 积分排行榜对话框
@@ -19,7 +19,7 @@ public class RankDialog extends JDialog {
      * @param parent 依赖的父级窗口
      * @param dp 数据访问处理对象，负责从数据库查询前 50 名数据
      */
-    public RankDialog(Frame parent, DataProcessing dp) {
+    public RankDialog(Frame parent, IDataProcessing dp) {
         super(parent, "积分排行榜 TOP 50", true);
         this.setSize(560, 420);
         this.setLocationRelativeTo(parent);
