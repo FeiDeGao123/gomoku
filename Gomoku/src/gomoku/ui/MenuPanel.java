@@ -136,7 +136,7 @@ public class MenuPanel extends JPanel {
 					handleUserAction();
 					return;
 				}
-				if (client != null) client.sendConnect("124.223.22.121", 1145);
+				if (client != null) client.sendConnect("124.223.22.121", 1145, pf.getCurrUser().getID());
 			}
 		});
 		GridBagConstraints gbcOnline = new GridBagConstraints();

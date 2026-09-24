@@ -39,6 +39,8 @@ public class GridPanel extends JPanel implements IListener {
 	private int dot = 5;
 	private boolean hasUndone = false;
 	private int currentAiLevel = IGameAI.EASY;
+	private int realBlackId;
+	private int realWhiteId;
 	
 	/**
 	 * 构造方法，注入核心依赖、重置棋盘状态并注册鼠标落子监听器
@@ -96,11 +98,13 @@ public class GridPanel extends JPanel implements IListener {
 						hasUndone = false;
 						if (gc.checkEnd(x, y, myColor)) {
 							gameOver = true;
-							mf.settleMatch(true, stepsRecord.toString());
+							int winnerId = (mf.getCurrUser() != null) ? mf.getCurrUser().getID() : myColor;
+							mf.settleMatch(realBlackId, realWhiteId, winnerId, stepsRecord.toString());
 							JOptionPane.showMessageDialog(mf, "恭喜，你战胜了对手！");
 						} 
 						else if (gc.allPushed()) {
 							gameOver = true;
+							mf.settleMatch(realBlackId, realWhiteId, 0, stepsRecord.toString());
 							JOptionPane.showMessageDialog(mf, "棋盘已下满，和棋平局");
 						}
 						else {
@@ -285,6 +289,12 @@ public class GridPanel extends JPanel implements IListener {
 		matchDialog.setVisible(true);
 	}
 
+	public void gameStart(int color, int blackId, int whiteId) {
+		this.realBlackId = blackId;
+		this.realWhiteId = whiteId;
+		gameStart(color);
+	}
+
 	/**
 	 * 网络监听回调，匹配成功并正式开始联机对战
 	 * @param color 服务端分配给本客户端的执棋颜色
@@ -376,7 +386,9 @@ public class GridPanel extends JPanel implements IListener {
 			hasUndone = false;
 			if (gc.checkEnd(x, y, oppColor)) {
 				gameOver = true;
-				mf.settleMatch(false, stepsRecord.toString());
+				if (mf.getCurrUser() != null) {
+					mf.setCurrUser(mf.getDataProcessing().getUserById(mf.getCurrUser().getID()));
+				}
 				JOptionPane.showMessageDialog(mf, "对手获胜！");
 			} 
 			else if (gc.allPushed()) {
@@ -400,7 +412,8 @@ public class GridPanel extends JPanel implements IListener {
 		if (!gameOver) {
 			gameOver = true;
 			mf.updateStatus("[联机对战] 对手逃跑！", false);
-			mf.settleMatch(true, stepsRecord.toString());
+			int winnerId = (mf.getCurrUser() != null) ? mf.getCurrUser().getID() : myColor;
+			mf.settleMatch(realBlackId, realWhiteId, winnerId, stepsRecord.toString());
 			JOptionPane.showMessageDialog(mf, "对手中途逃跑，你获得胜利！");
 		}
 	}
@@ -507,7 +520,7 @@ public class GridPanel extends JPanel implements IListener {
 			String myRole = (myColor == IGameCheck.BLACK) ? "黑棋" : "白棋";
 			String diffName = "简单";
 			if (currentAiLevel == IGameAI.MID) diffName = "普通";
-			else if (currentAiLevel == GameAI.HARD) diffName = "困难";
+			else if (currentAiLevel == IGameAI.HARD) diffName = "困难";
 			mf.updateStatus("[人机对战(" + diffName + ") - 你执" + myRole + "] [轮到你了]", true);
 		}
 	}
@@ -557,7 +570,9 @@ public class GridPanel extends JPanel implements IListener {
 			JOptionPane.showMessageDialog(mf, "你已认输，电脑获胜！");
 			mf.updateStatus("[人机对战] 电脑获胜！", true);
 		} else if (mode == ONLINE) {
-			mf.settleMatch(false, stepsRecord.toString());
+			int myId = (mf.getCurrUser() != null) ? mf.getCurrUser().getID() : 0;
+			int opponentId = (myId == realBlackId) ? realWhiteId : realBlackId;
+			mf.settleMatch(realBlackId, realWhiteId, opponentId, stepsRecord.toString());
 			client.disconnect();
 			JOptionPane.showMessageDialog(mf, "你已认输，本局判负！");
 			mf.updateStatus("[联机对战] 你已认输！", true);

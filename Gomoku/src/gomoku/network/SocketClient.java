@@ -21,13 +21,17 @@ public class SocketClient implements IClient {
 	public void setObj(IListener gl) {
 		this.gl = gl;
 	}
+
+	public void sendConnect(String host, int port) {
+		sendConnect(host, port, 0);
+	}
 	
 	/**
 	 * 发起与服务端的 Socket 连接并请求匹配
 	 * @param host 服务器 IP 地址
 	 * @param port 服务器端口号
 	 */
-	public void sendConnect(String host, int port) {
+	public void sendConnect(String host, int port, int userId) {
 		Thread connectThread = new Thread(new Runnable() {
             public void run() {
                 try {
@@ -40,7 +44,7 @@ public class SocketClient implements IClient {
                     ois = new ObjectInputStream(socket.getInputStream());
                     isRunning = true;
                     startListening();
-                    send(new Message(Message.MATCH));
+                    send(new Message(Message.MATCH, userId));
                 } catch (IOException e) {
                     dispatchError("连接服务器失败");
                 }
@@ -81,7 +85,7 @@ public class SocketClient implements IClient {
 				if (gl != null) SwingUtilities.invokeLater(() -> gl.playerWait());
 				break;
 			case Message.START:
-				if (gl != null) SwingUtilities.invokeLater(() -> gl.gameStart(msg.getColor()));
+				if (gl != null) SwingUtilities.invokeLater(() -> gl.gameStart(msg.getColor(), msg.getBlackId(), msg.getWhiteId()));
 				break;
 			case Message.PUSH:
 				if (gl != null) SwingUtilities.invokeLater(() -> gl.otherPush(msg.getX(), msg.getY()));

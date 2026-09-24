@@ -22,6 +22,9 @@ public class Message implements Serializable {
     private int color;
     private String chatMsg;
     private boolean agree;
+    private int blackId;
+    private int whiteId;
+    private int senderId;
     
     /**
      * 无参构造方法
@@ -36,14 +39,16 @@ public class Message implements Serializable {
     	this.type = type;
     }
     
-    /**
-     * 构造开局执色报文
-     * @param type 协议类型
-     * @param color 分配的棋子颜色
-     */
-    public Message(int type, int color) {
-        this.type = type;
-        this.color = color;
+    public Message(int type, int senderId) {
+    	this.type = type;
+    	this.senderId = senderId;
+    }
+
+    public Message(int type, int color, int blackId, int whiteId) {
+    	this.type = type;
+    	this.color = color;
+    	this.blackId = blackId;
+    	this.whiteId = whiteId;
     }
     
     /**
@@ -125,6 +130,18 @@ public class Message implements Serializable {
     public boolean isAgree() {
     	return agree;
     }
+
+    public int getBlackId() {
+    	return blackId;
+    }
+
+    public int getWhiteId() {
+    	return whiteId;
+    }
+
+    public int getSenderId() {
+    	return senderId;
+    }
     
     /**
      * 设置报文类型
@@ -172,5 +189,17 @@ public class Message implements Serializable {
      */
     public void setAgree(boolean agree) {
     	this.agree = agree;
+    }
+
+    public void setBlackId(int blackId) {
+    	this.blackId = blackId;
+    }
+
+    public void setWhiteId(int whiteId) {
+    	this.whiteId = whiteId;
+    }
+
+    public void setSenderId(int senderId) {
+    	this.senderId = senderId;
     }
 }

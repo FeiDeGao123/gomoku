@@ -129,6 +129,16 @@ public class MainFrame extends JFrame {
             }
         }
     }
+
+    public void settleMatch(int blackId, int whiteId, int winnerId, String hexSteps) {
+        dp.settleMatch(blackId, whiteId, winnerId, hexSteps);
+        if (currUser != null) {
+            this.currUser = dp.getUserById(currUser.getID());
+            if (mp != null) {
+                mp.updateUserInfo(currUser);
+            }
+        }
+    }
     
     /**
      * 创建对局界面

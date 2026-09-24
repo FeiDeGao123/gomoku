@@ -40,6 +40,7 @@ public class GameServer {
         private Player other;
         private ObjectInputStream ois;
         private ObjectOutputStream oos;
+        private int userId;
 
         /**
          * 构造方法，初始化玩家流通道
@@ -80,6 +81,7 @@ public class GameServer {
         private void messagePro(Message msg) {
             switch (msg.getType()) {
             	case Message.MATCH:
+                    this.userId = msg.getSenderId();
             		match();
             		break;
             	case Message.PUSH:
@@ -118,8 +120,10 @@ public class GameServer {
                 	Player player2 = this;
                 	player1.other = player2;
                 	player2.other = player1;
-                    player1.send(new Message(Message.START, 1));
-                    player2.send(new Message(Message.START, 2));
+                    int bId = player1.userId;
+                    int wId = player2.userId;
+                    player1.send(new Message(Message.START, 1, bId, wId));
+                    player2.send(new Message(Message.START, 2, bId, wId));
                     System.out.println("匹配成功！已为两名玩家创建对战房间。");
                 }
             }

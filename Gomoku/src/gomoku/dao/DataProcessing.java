@@ -123,12 +123,7 @@ public class DataProcessing implements IDataProcessing {
     }
 
     /**
-     * 对局结算
-     * 加 S 锁校验读取玩家当前底分
-     * 获取行级 X 锁更新 player 表胜负场与天梯分
-     * 写入 game_match 表保存十六进制棋谱，并回传自增对局 ID
-     * 写入 rating_log 表保存积分变动审计流水
-     * 异常出现，执行 rollback 回滚
+     * 单人对局结算
      * @param userId 结算玩家的主键 ID
      * @param isWin 本局是否获胜
      * @param hexSteps 棋谱坐标序列的十六进制编码文本
@@ -164,8 +159,11 @@ public class DataProcessing implements IDataProcessing {
             try (PreparedStatement ps2 = conn.prepareStatement(insertMatchSql, Statement.RETURN_GENERATED_KEYS)) {
                 ps2.setInt(1, userId); 
                 ps2.setInt(2, userId);
-                if (isWin) ps2.setInt(3, userId);
-                else ps2.setNull(3, Types.INTEGER);
+                if (isWin) {
+                    ps2.setInt(3, userId);
+                } else {
+                    ps2.setNull(3, Types.INTEGER);
+                }
                 ps2.setInt(4, hexSteps == null ? 0 : hexSteps.length() / 2);
                 ps2.setString(5, hexSteps == null ? "" : hexSteps);
                 ps2.setString(6, "NORMAL");
@@ -201,6 +199,111 @@ public class DataProcessing implements IDataProcessing {
                     conn.setAutoCommit(true);
                     conn.close();
                 } catch (SQLException ignored) {}
+            }
+        }
+    }
+
+    /**
+     * 双方对战标准对局结算
+     * 一场比赛仅在 game_match 插入一条对局记录，同时为双方生成 rating_log
+     * @param blackId 黑方选手 ID
+     * @param whiteId 白方选手 ID
+     * @param winnerId 胜者 ID (平局为 0 或负数)
+     * @param hexSteps 棋谱十六进制编码文本
+     */
+    public void settleMatch(int blackId, int whiteId, int winnerId, String hexSteps) {
+        Connection conn = null;
+        try {
+            conn = DataBase.getConnection();
+            conn.setAutoCommit(false);
+            int loserId = (winnerId == blackId) ? whiteId : blackId;
+            int winAfterRating = 1010;
+            if (winnerId > 0) {
+                String queryWinSql = "select rating from `player` where id = ? lock in share mode";
+                try (PreparedStatement ps0 = conn.prepareStatement(queryWinSql)) {
+                    ps0.setInt(1, winnerId);
+                    try (ResultSet rs = ps0.executeQuery()) {
+                        if (rs.next()) winAfterRating = rs.getInt("rating") + 10;
+                    }
+                }
+                String winSql = "update `player` set rating = rating + 10, win_cnt = win_cnt + 1 where id = ?";
+                try (PreparedStatement ps1 = conn.prepareStatement(winSql)) {
+                    ps1.setInt(1, winnerId);
+                    ps1.executeUpdate();
+                }
+            }
+            int loseAfterRating = 995;
+            if (loserId > 0 && loserId != winnerId) {
+                String queryLoseSql = "select rating from `player` where id = ? lock in share mode";
+                try (PreparedStatement ps0 = conn.prepareStatement(queryLoseSql)) {
+                    ps0.setInt(1, loserId);
+                    try (ResultSet rs = ps0.executeQuery()) {
+                        if (rs.next()) loseAfterRating = Math.max(0, rs.getInt("rating") - 5);
+                    }
+                }
+                String loseSql = "update `player` set rating = greatest(0, rating - 5), lose_cnt = lose_cnt + 1 where id = ?";
+                try (PreparedStatement psL = conn.prepareStatement(loseSql)) {
+                    psL.setInt(1, loserId);
+                    psL.executeUpdate();
+                }
+            }
+            int matchId = 0;
+            String insertMatchSql = "insert into `game_match` (black_id, white_id, winner_id, total_steps, hex_steps, finish_reason) values (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement ps2 = conn.prepareStatement(insertMatchSql, Statement.RETURN_GENERATED_KEYS)) {
+                ps2.setInt(1, blackId);
+                ps2.setInt(2, whiteId);
+                if (winnerId > 0) {
+                    ps2.setInt(3, winnerId);
+                } else {
+                    ps2.setNull(3, Types.INTEGER);
+                }
+                ps2.setInt(4, hexSteps == null ? 0 : hexSteps.length() / 2);
+                ps2.setString(5, hexSteps == null ? "" : hexSteps);
+                ps2.setString(6, "NORMAL");
+                ps2.executeUpdate();
+                try (ResultSet rsKey = ps2.getGeneratedKeys()) {
+                    if (rsKey.next()) matchId = rsKey.getInt(1);
+                }
+            }
+            if (matchId > 0) {
+                String insertLogSql = "insert into `rating_log` (player_id, match_id, change_amount, after_rating, reason) values (?, ?, ?, ?, ?)";
+                try (PreparedStatement ps3 = conn.prepareStatement(insertLogSql)) {
+                    // 胜方
+                    if (winnerId > 0) {
+                        ps3.setInt(1, winnerId);
+                        ps3.setInt(2, matchId);
+                        ps3.setInt(3, 10);
+                        ps3.setInt(4, winAfterRating);
+                        ps3.setString(5, "WIN");
+                        ps3.executeUpdate();
+                    }
+                    // 负方
+                    if (loserId > 0 && loserId != winnerId) {
+                        ps3.setInt(1, loserId);
+                        ps3.setInt(2, matchId);
+                        ps3.setInt(3, -5);
+                        ps3.setInt(4, loseAfterRating);
+                        ps3.setString(5, "LOSS");
+                        ps3.executeUpdate();
+                    }
+                }
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {}
             }
         }
     }

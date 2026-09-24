@@ -14,6 +14,8 @@ public interface IListener {
 	 * @param color 服务端分配给本客户端的执棋颜色
 	 */
 	void gameStart(int color);
+
+	void gameStart(int color, int blackId, int whiteId);
 	
 	/**
 	 * 接收到对手落子事件

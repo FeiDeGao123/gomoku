@@ -17,6 +17,8 @@ public interface IClient {
 	 * @param port 目标服务器监听端口
 	 */
 	void sendConnect(String host, int port);
+
+	void sendConnect(String host, int port, int userId);
 	
 	/**
 	 * 向服务端发送落子坐标信令，服务端接收后将透明中继转发给当前对弈的对手

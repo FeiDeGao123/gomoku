@@ -6,7 +6,7 @@ import java.util.List;
  * 数据持久化业务抽象接口
  */
 public interface IDataProcessing {
-	/**
+    /**
      * 用户登录
      * @param name 用户名
      * @param password 登录密码
@@ -30,17 +30,21 @@ public interface IDataProcessing {
     User getUserById(int userId);
     
     /**
-     * 对局结算
-     * 加 S 锁校验读取玩家当前底分
-     * 获取行级 X 锁更新 player 表胜负场与天梯分
-     * 写入 game_match 表保存十六进制棋谱，并回传自增对局 ID
-     * 写入 rating_log 表保存积分变动审计流水
-     * 异常出现，执行 rollback 回滚
-     * @param userId 结算玩家的主键 ID
-     * @param isWin 本局是否获胜
+     * 单人/人机/单视角对局结算 (保持对原有代码兼容)
+     * @param userId   结算玩家的主键 ID
+     * @param isWin    本局是否获胜
      * @param hexSteps 棋谱坐标序列的十六进制编码文本
      */
     void settleMatch(int userId, boolean isWin, String hexSteps);
+
+    /**
+     * 双方对战对局结算
+     * @param blackId  黑方选手 ID
+     * @param whiteId  白方选手 ID
+     * @param winnerId 胜者 ID
+     * @param hexSteps 棋谱坐标序列的十六进制编码文本
+     */
+    void settleMatch(int blackId, int whiteId, int winnerId, String hexSteps);
     
     /**
      * 查询指定玩家的全部历史对局记录
