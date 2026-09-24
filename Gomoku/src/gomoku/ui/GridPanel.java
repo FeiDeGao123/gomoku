@@ -11,8 +11,8 @@ import gomoku.network.IListener;
 import gomoku.util.SoundPlayer;
 
 /**
- * äº”å­æ£‹æ£‹ç›˜å›¾å½¢äº¤äº’é¢æ¿
- * ç»§æ‰¿è‡ª JPanel å¹¶å®ç°äº† IListener ç½‘ç»œäº‹ä»¶ç›‘å¬å›è°ƒæ¥å£
+ * Îå×ÓÆåÆåÅÌÍ¼ĞÎ½»»¥Ãæ°å
+ * ¼Ì³Ğ×Ô JPanel ²¢ÊµÏÖÁË IListener ÍøÂçÊÂ¼ş¼àÌı»Øµ÷½Ó¿Ú
  */
 public class GridPanel extends JPanel implements IListener {
 	private static final long serialVersionUID = 1L;
@@ -43,10 +43,10 @@ public class GridPanel extends JPanel implements IListener {
 	private int realWhiteId;
 	
 	/**
-	 * æ„é€ æ–¹æ³•ï¼Œæ³¨å…¥æ ¸å¿ƒä¾èµ–ã€é‡ç½®æ£‹ç›˜çŠ¶æ€å¹¶æ³¨å†Œé¼ æ ‡è½å­ç›‘å¬å™¨
-	 * @param mf ä¸»çª—å£å¯¹è±¡å¼•ç”¨
-	 * @param gc æ£‹ç›˜é€»è¾‘è£åˆ¤å¯¹è±¡
-	 * @param client ç½‘ç»œé€šä¿¡å®¢æˆ·ç«¯
+	 * ¹¹Ôì·½·¨£¬×¢ÈëºËĞÄÒÀÀµ¡¢ÖØÖÃÆåÅÌ×´Ì¬²¢×¢²áÊó±êÂä×Ó¼àÌıÆ÷
+	 * @param mf Ö÷´°¿Ú¶ÔÏóÒıÓÃ
+	 * @param gc ÆåÅÌÂß¼­²ÃÅĞ¶ÔÏó
+	 * @param client ÍøÂçÍ¨ĞÅ¿Í»§¶Ë
 	 */
 	public GridPanel(MainFrame mf, IGameCheck gc, IClient client) {
 		this.mf = mf;
@@ -70,12 +70,12 @@ public class GridPanel extends JPanel implements IListener {
 						repaint();
 						if (gc.checkEnd(x, y, currColor)) {
 							gameOver = true;
-							String winner = currColor == IGameCheck.BLACK ? "é»‘æ£‹" : "ç™½æ£‹";
-							JOptionPane.showMessageDialog(mf, "æ­å–œï¼Œ" + winner + " è·èƒœï¼");
+							String winner = currColor == IGameCheck.BLACK ? "ºÚÆå" : "°×Æå";
+							JOptionPane.showMessageDialog(mf, "¹§Ï²£¬" + winner + " »ñÊ¤£¡");
 						} 
 						else if (gc.allPushed()) {
 							gameOver = true;
-							JOptionPane.showMessageDialog(mf, "æ£‹ç›˜å·²ä¸‹æ»¡ï¼Œå’Œæ£‹å¹³å±€");
+							JOptionPane.showMessageDialog(mf, "ÆåÅÌÒÑÏÂÂú£¬ºÍÆåÆ½¾Ö");
 						}
 						else {
 							currColor = (gc.stkSize() % 2 == 0) ? IGameCheck.BLACK : IGameCheck.WHITE;
@@ -85,7 +85,7 @@ public class GridPanel extends JPanel implements IListener {
 				} 
 				else if (mode == ONLINE) {
 					if (currColor != myColor) {
-						JOptionPane.showMessageDialog(mf, "è¿˜æ²¡è½®åˆ°ä½ è½å­ï¼Œè¯·ç­‰å¾…å¯¹æ‰‹ï¼");
+						JOptionPane.showMessageDialog(mf, "»¹Ã»ÂÖµ½ÄãÂä×Ó£¬ÇëµÈ´ı¶ÔÊÖ£¡");
 						return;
 					}
 					if (gc.checkPush(x, y, myColor)) {
@@ -100,12 +100,12 @@ public class GridPanel extends JPanel implements IListener {
 							gameOver = true;
 							int winnerId = (mf.getCurrUser() != null) ? mf.getCurrUser().getID() : myColor;
 							mf.settleMatch(realBlackId, realWhiteId, winnerId, stepsRecord.toString());
-							JOptionPane.showMessageDialog(mf, "æ­å–œï¼Œä½ æˆ˜èƒœäº†å¯¹æ‰‹ï¼");
+							JOptionPane.showMessageDialog(mf, "¹§Ï²£¬ÄãÕ½Ê¤ÁË¶ÔÊÖ£¡");
 						} 
 						else if (gc.allPushed()) {
 							gameOver = true;
 							mf.settleMatch(realBlackId, realWhiteId, 0, stepsRecord.toString());
-							JOptionPane.showMessageDialog(mf, "æ£‹ç›˜å·²ä¸‹æ»¡ï¼Œå’Œæ£‹å¹³å±€");
+							JOptionPane.showMessageDialog(mf, "ÆåÅÌÒÑÏÂÂú£¬ºÍÆåÆ½¾Ö");
 						}
 						else {
 							currColor = (gc.stkSize() % 2 == 0) ? IGameCheck.BLACK : IGameCheck.WHITE;
@@ -122,19 +122,19 @@ public class GridPanel extends JPanel implements IListener {
 						repaint();
 						if (gc.checkEnd(x, y, myColor)) {
 							gameOver = true;
-							mf.updateStatus("[äººæœºå¯¹æˆ˜] ä½ èµ¢äº†ï¼", true);
-							JOptionPane.showMessageDialog(mf, "æ­å–œï¼Œä½ æˆ˜èƒœäº†ç”µè„‘ï¼");
+							mf.updateStatus("[ÈË»ú¶ÔÕ½] ÄãÓ®ÁË£¡", true);
+							JOptionPane.showMessageDialog(mf, "¹§Ï²£¬ÄãÕ½Ê¤ÁËµçÄÔ£¡");
 							return;
 						}
 						else if (gc.allPushed()) {
 							gameOver = true;
-							mf.updateStatus("[äººæœºå¯¹æˆ˜] åŒæ–¹å’Œæ£‹ï¼", true);
-							JOptionPane.showMessageDialog(mf, "æ£‹ç›˜å·²ä¸‹æ»¡ï¼Œå’Œæ£‹å¹³å±€");
+							mf.updateStatus("[ÈË»ú¶ÔÕ½] Ë«·½ºÍÆå£¡", true);
+							JOptionPane.showMessageDialog(mf, "ÆåÅÌÒÑÏÂÂú£¬ºÍÆåÆ½¾Ö");
 							return;
 						}
 						currColor ^= 3;
 						int aiColor = myColor ^ 3;
-						mf.updateStatus("[äººæœºå¯¹æˆ˜] ç”µè„‘æ€è€ƒä¸­...", false);
+						mf.updateStatus("[ÈË»ú¶ÔÕ½] µçÄÔË¼¿¼ÖĞ...", false);
 						Timer timer = new Timer(120, new ActionListener() {
 							public void actionPerformed(ActionEvent evt) {
 								int[] pos = ai.findMove(gc, aiColor, currentAiLevel);
@@ -146,13 +146,13 @@ public class GridPanel extends JPanel implements IListener {
 									repaint();
 									if (gc.checkEnd(pos[0], pos[1], aiColor)) {
 										gameOver = true;
-										mf.updateStatus("[äººæœºå¯¹æˆ˜] ç”µè„‘è·èƒœï¼", true);
-										JOptionPane.showMessageDialog(mf, "ç”µè„‘è·èƒœï¼ä¸‹æ¬¡åŠ æ²¹ï¼");
+										mf.updateStatus("[ÈË»ú¶ÔÕ½] µçÄÔ»ñÊ¤£¡", true);
+										JOptionPane.showMessageDialog(mf, "µçÄÔ»ñÊ¤£¡ÏÂ´Î¼ÓÓÍ£¡");
 									}
 									else if (gc.allPushed()) {
 										gameOver = true;
-										mf.updateStatus("[äººæœºå¯¹æˆ˜] åŒæ–¹å’Œæ£‹ï¼", true);
-										JOptionPane.showMessageDialog(mf, "æ£‹ç›˜å·²ä¸‹æ»¡ï¼Œå’Œæ£‹å¹³å±€");
+										mf.updateStatus("[ÈË»ú¶ÔÕ½] Ë«·½ºÍÆå£¡", true);
+										JOptionPane.showMessageDialog(mf, "ÆåÅÌÒÑÏÂÂú£¬ºÍÆåÆ½¾Ö");
 									}
 									else {
 										currColor ^= 3;
@@ -170,8 +170,8 @@ public class GridPanel extends JPanel implements IListener {
 	}
 	
 	/**
-	 * åŠ¨æ€è®¡ç®—å¹¶æ›´æ–°æ£‹ç›˜å¤§å°
-	 * æ ¹æ®å½“å‰é¢æ¿çš„å®½å’Œé«˜ï¼Œè‡ªåŠ¨æ¨å¯¼æ–¹æ ¼å¤§å° sqã€è¾¹è· edgeX/edgeY åŠæ£‹å­åŠå¾„ radius
+	 * ¶¯Ì¬¼ÆËã²¢¸üĞÂÆåÅÌ´óĞ¡
+	 * ¸ù¾İµ±Ç°Ãæ°åµÄ¿íºÍ¸ß£¬×Ô¶¯ÍÆµ¼·½¸ñ´óĞ¡ sq¡¢±ß¾à edgeX/edgeY ¼°Æå×Ó°ë¾¶ radius
 	 */
 	private void updateMetrics() {
 		int w = getWidth();
@@ -187,7 +187,7 @@ public class GridPanel extends JPanel implements IListener {
 	}
 	
 	/**
-	 * ç»˜åˆ¶æ£‹ç›˜ç»„ä»¶æ ¸å¿ƒæ–¹æ³•
+	 * »æÖÆÆåÅÌ×é¼şºËĞÄ·½·¨
 	 */
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -225,7 +225,7 @@ public class GridPanel extends JPanel implements IListener {
 	}
 	
 	/**
-	 * é‡æ–°å¼€å§‹å½“å‰æ¨¡å¼å¯¹å±€
+	 * ÖØĞÂ¿ªÊ¼µ±Ç°Ä£Ê½¶Ô¾Ö
 	 */
 	public void restart() {
 		if (this.mode == PVE) {
@@ -241,12 +241,12 @@ public class GridPanel extends JPanel implements IListener {
         hasUndone = false;
         repaint();
         if (mf != null) {
-            mf.updateStatus("[å•æœºæ¨¡å¼] è½®åˆ° é»‘æ£‹ è½å­", true);
+            mf.updateStatus("[µ¥»úÄ£Ê½] ÂÖµ½ ºÚÆå Âä×Ó", true);
         }
     }
 
 	/**
-	 * é‡ç½®æ£‹ç›˜æ•°æ®
+	 * ÖØÖÃÆåÅÌÊı¾İ
 	 */
 	public void cleanReset() {
 		preX = -1;
@@ -260,19 +260,19 @@ public class GridPanel extends JPanel implements IListener {
 	}
 
 	/**
-	 * ç½‘ç»œç›‘å¬å›è°ƒï¼šè°ƒèµ·è”æœºåŒ¹é…æ’é˜Ÿç­‰å¾…æ¡†
+	 * ÍøÂç¼àÌı»Øµ÷£ºµ÷ÆğÁª»úÆ¥ÅäÅÅ¶ÓµÈ´ı¿ò
 	 */
 	public void playerWait() {
-		matchDialog = new JDialog(mf, "å¯¹å±€åŒ¹é…ä¸­", true);
+		matchDialog = new JDialog(mf, "¶Ô¾ÖÆ¥ÅäÖĞ", true);
 		matchDialog.setSize(320, 160);
 		matchDialog.setLocationRelativeTo(mf);
 		matchDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		JPanel panel = new JPanel(new BorderLayout(10, 15));
 		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 15, 20));
-		JLabel label = new JLabel("æ­£åœ¨åŒ¹é…ï¼Œè¯·ç¨å€™...", SwingConstants.CENTER);
-		label.setFont(new Font("å¾®è½¯é›…é»‘", Font.PLAIN, 15));
-		JButton cancelBtn = new JButton("å–æ¶ˆåŒ¹é…");
-		cancelBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));
+		JLabel label = new JLabel("ÕıÔÚÆ¥Åä£¬ÇëÉÔºò...", SwingConstants.CENTER);
+		label.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 15));
+		JButton cancelBtn = new JButton("È¡ÏûÆ¥Åä");
+		cancelBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
 		cancelBtn.setFocusPainted(false);
 		cancelBtn.addActionListener(e -> {
 			client.disconnect();
@@ -296,8 +296,8 @@ public class GridPanel extends JPanel implements IListener {
 	}
 
 	/**
-	 * ç½‘ç»œç›‘å¬å›è°ƒï¼ŒåŒ¹é…æˆåŠŸå¹¶æ­£å¼å¼€å§‹è”æœºå¯¹æˆ˜
-	 * @param color æœåŠ¡ç«¯åˆ†é…ç»™æœ¬å®¢æˆ·ç«¯çš„æ‰§æ£‹é¢œè‰²
+	 * ÍøÂç¼àÌı»Øµ÷£¬Æ¥Åä³É¹¦²¢ÕıÊ½¿ªÊ¼Áª»ú¶ÔÕ½
+	 * @param color ·şÎñ¶Ë·ÖÅä¸ø±¾¿Í»§¶ËµÄÖ´ÆåÑÕÉ«
 	 */
 	public void gameStart(int color) {
 		preX = -1;
@@ -315,14 +315,14 @@ public class GridPanel extends JPanel implements IListener {
 		repaint();
 		mf.startOnlineGame();
 		syncStatus();
-		String role = (color == IGameCheck.BLACK) ? "é»‘æ£‹(å…ˆæ‰‹)" : "ç™½æ£‹(åæ‰‹)";
-		JOptionPane.showMessageDialog(mf, "åŒ¹é…æˆåŠŸï¼å¯¹å±€å¼€å§‹ï¼Œä½ æ‰§: " + role);
+		String role = (color == IGameCheck.BLACK) ? "ºÚÆå(ÏÈÊÖ)" : "°×Æå(ºóÊÖ)";
+		JOptionPane.showMessageDialog(mf, "Æ¥Åä³É¹¦£¡¶Ô¾Ö¿ªÊ¼£¬ÄãÖ´: " + role);
 	}
 
 	/**
-	 * å¯åŠ¨äººæœºå¯¹æˆ˜æ¨¡å¼
-	 * @param playerColor ç©å®¶æ‰§å­é¢œè‰²
-	 * @param level AI éš¾åº¦ç­‰çº§
+	 * Æô¶¯ÈË»ú¶ÔÕ½Ä£Ê½
+	 * @param playerColor Íæ¼ÒÖ´×ÓÑÕÉ«
+	 * @param level AI ÄÑ¶ÈµÈ¼¶
 	 */
 	public void startPve(int playerColor, int level) {
 		this.currentAiLevel = level;
@@ -334,14 +334,14 @@ public class GridPanel extends JPanel implements IListener {
 		currColor = IGameCheck.BLACK;
 		gameOver = false;
 		repaint();
-		final String diffName = (level == IGameAI.HARD) ? "å›°éš¾" : ((level == IGameAI.MID) ? "æ™®é€š" : "ç®€å•");
+		final String diffName = (level == IGameAI.HARD) ? "À§ÄÑ" : ((level == IGameAI.MID) ? "ÆÕÍ¨" : "¼òµ¥");
 		if (myColor == IGameCheck.BLACK) {
 			if (mf != null) {
-				mf.updateStatus("[äººæœºå¯¹æˆ˜(" + diffName + ") - ä½ æ‰§é»‘æ£‹] [è½®åˆ°ä½ äº†]", true);
+				mf.updateStatus("[ÈË»ú¶ÔÕ½(" + diffName + ") - ÄãÖ´ºÚÆå] [ÂÖµ½ÄãÁË]", true);
 			}
 		} else {
 			if (mf != null) {
-				mf.updateStatus("[äººæœºå¯¹æˆ˜(" + diffName + ") - ä½ æ‰§ç™½æ£‹] ç”µè„‘æ€è€ƒ", false);
+				mf.updateStatus("[ÈË»ú¶ÔÕ½(" + diffName + ") - ÄãÖ´°×Æå] µçÄÔË¼¿¼", false);
 			}
 			Timer timer = new Timer(120, new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
@@ -355,7 +355,7 @@ public class GridPanel extends JPanel implements IListener {
 						repaint();
 						currColor = IGameCheck.WHITE;
 						if (mf != null) {
-							mf.updateStatus("[äººæœºå¯¹æˆ˜(" + diffName + ") - ä½ æ‰§ç™½æ£‹] [è½®åˆ°ä½ äº†]", true);
+							mf.updateStatus("[ÈË»ú¶ÔÕ½(" + diffName + ") - ÄãÖ´°×Æå] [ÂÖµ½ÄãÁË]", true);
 						}
 					}
 				}
@@ -366,14 +366,14 @@ public class GridPanel extends JPanel implements IListener {
 	}
 
 	/**
-	 * å¼€å§‹ AI å¯¹æˆ˜ï¼Œé»˜è®¤æ¨¡å¼
+	 * ¿ªÊ¼ AI ¶ÔÕ½£¬Ä¬ÈÏÄ£Ê½
 	 */
 	public void startPve(int playerColor) {
 		startPve(playerColor, this.currentAiLevel);
 	}
 	
 	/**
-	 * ç½‘ç»œç›‘å¬å›è°ƒï¼šæ¥æ”¶åˆ°å¯¹æ‰‹åœ¨ (x, y) çš„è½å­ä¿¡ä»¤
+	 * ÍøÂç¼àÌı»Øµ÷£º½ÓÊÕµ½¶ÔÊÖÔÚ (x, y) µÄÂä×ÓĞÅÁî
 	 */
 	public void otherPush(int x, int y) {
 		int oppColor = myColor ^ 3;
@@ -389,11 +389,11 @@ public class GridPanel extends JPanel implements IListener {
 				if (mf.getCurrUser() != null) {
 					mf.setCurrUser(mf.getDataProcessing().getUserById(mf.getCurrUser().getID()));
 				}
-				JOptionPane.showMessageDialog(mf, "å¯¹æ‰‹è·èƒœï¼");
+				JOptionPane.showMessageDialog(mf, "¶ÔÊÖ»ñÊ¤£¡");
 			} 
 			else if (gc.allPushed()) {
 				gameOver = true;
-				JOptionPane.showMessageDialog(mf, "æ£‹ç›˜å·²ä¸‹æ»¡ï¼Œå’Œæ£‹å¹³å±€");
+				JOptionPane.showMessageDialog(mf, "ÆåÅÌÒÑÏÂÂú£¬ºÍÆåÆ½¾Ö");
 			}
 			else {
 				currColor = (gc.stkSize() % 2 == 0) ? IGameCheck.BLACK : IGameCheck.WHITE;
@@ -403,7 +403,7 @@ public class GridPanel extends JPanel implements IListener {
 	}
 
 	/**
-	 * ç½‘ç»œç›‘å¬ï¼Œå¯¹æ‰‹ä¸­é€”æ–­å¼€æˆ–å¼ºé€€
+	 * ÍøÂç¼àÌı£¬¶ÔÊÖÖĞÍ¾¶Ï¿ª»òÇ¿ÍË
 	 */
 	public void otherQuit() {
 		if (matchDialog != null && matchDialog.isShowing()) {
@@ -411,36 +411,36 @@ public class GridPanel extends JPanel implements IListener {
 		}
 		if (!gameOver) {
 			gameOver = true;
-			mf.updateStatus("[è”æœºå¯¹æˆ˜] å¯¹æ‰‹é€ƒè·‘ï¼", false);
+			mf.updateStatus("[Áª»ú¶ÔÕ½] ¶ÔÊÖÌÓÅÜ£¡", false);
 			int winnerId = (mf.getCurrUser() != null) ? mf.getCurrUser().getID() : myColor;
 			mf.settleMatch(realBlackId, realWhiteId, winnerId, stepsRecord.toString());
-			JOptionPane.showMessageDialog(mf, "å¯¹æ‰‹ä¸­é€”é€ƒè·‘ï¼Œä½ è·å¾—èƒœåˆ©ï¼");
+			JOptionPane.showMessageDialog(mf, "¶ÔÊÖÖĞÍ¾ÌÓÅÜ£¬Äã»ñµÃÊ¤Àû£¡");
 		}
 	}
 
 	/**
-	 * æœ¬åœ°ç©å®¶ç‚¹å‡»æ‚”æ£‹æ“ä½œå¤„ç†
+	 * ±¾µØÍæ¼Òµã»÷»ÚÆå²Ù×÷´¦Àí
 	 */
 	public void undo() {
 		if (gameOver) {
-			JOptionPane.showMessageDialog(mf, "æœ¬å±€æ¸¸æˆå·²ç»“æŸï¼Œæ— æ³•æ‚”æ£‹ï¼");
+			JOptionPane.showMessageDialog(mf, "±¾¾ÖÓÎÏ·ÒÑ½áÊø£¬ÎŞ·¨»ÚÆå£¡");
 			return;
 		}
 		if (gc.stkSize() == 0) {
-			JOptionPane.showMessageDialog(mf, "æ£‹ç›˜ä¸Šè¿˜æ²¡æœ‰è½å­ï¼Œæ— æ³•æ‚”æ£‹ï¼");
+			JOptionPane.showMessageDialog(mf, "ÆåÅÌÉÏ»¹Ã»ÓĞÂä×Ó£¬ÎŞ·¨»ÚÆå£¡");
 			return;
 		}
 		if (mode == ONLINE) {
 			if (hasUndone) {
-				JOptionPane.showMessageDialog(mf, "ä½ åˆšåˆšå·²ç»æ‚”è¿‡æ£‹äº†ï¼Œå½“å‰è½®æ¬¡æ— æ³•å†æ¬¡è¿ç»­æ‚”æ£‹ï¼");
+				JOptionPane.showMessageDialog(mf, "Äã¸Õ¸ÕÒÑ¾­»Ú¹ıÆåÁË£¬µ±Ç°ÂÖ´ÎÎŞ·¨ÔÙ´ÎÁ¬Ğø»ÚÆå£¡");
 				return;
 			}
 			if (gc.stkSize() == 1 && currColor != myColor) {
-				JOptionPane.showMessageDialog(mf, "ä½ å°šæœªè½å­ï¼Œæ— æ³•æ‚”æ£‹ï¼");
+				JOptionPane.showMessageDialog(mf, "ÄãÉĞÎ´Âä×Ó£¬ÎŞ·¨»ÚÆå£¡");
 				return;
 			}
 			client.sendSubUndo();
-			JOptionPane.showMessageDialog(mf, "å·²å‘å¯¹æ‰‹ç”³è¯·æ‚”æ£‹ï¼Œè¯·ç­‰å¾…å¯¹æ–¹åŒæ„...");
+			JOptionPane.showMessageDialog(mf, "ÒÑÏò¶ÔÊÖÉêÇë»ÚÆå£¬ÇëµÈ´ı¶Ô·½Í¬Òâ...");
 			return;
 		}
 		if (mode == LOCAL) {
@@ -450,7 +450,7 @@ public class GridPanel extends JPanel implements IListener {
 		} 
 		else if (mode == PVE) {
 			if (gc.stkSize() < 2) {
-				JOptionPane.showMessageDialog(mf, "æ­¥æ•°ä¸è¶³ï¼Œæ— æ³•æ‚”æ£‹ï¼");
+				JOptionPane.showMessageDialog(mf, "²½Êı²»×ã£¬ÎŞ·¨»ÚÆå£¡");
 				return;
 			}
 			executeUndoSteps(2);
@@ -460,7 +460,7 @@ public class GridPanel extends JPanel implements IListener {
 	}
 
 	/**
-	 * ç½‘ç»œç›‘å¬å›è°ƒï¼Œæ”¶åˆ°å¯¹æ‰‹å‘æ¥çš„æ‚”æ£‹ç”³è¯·
+	 * ÍøÂç¼àÌı»Øµ÷£¬ÊÕµ½¶ÔÊÖ·¢À´µÄ»ÚÆåÉêÇë
 	 */
 	public void subUndo() {
 		if (gameOver || gc.stkSize() == 0) {
@@ -468,7 +468,7 @@ public class GridPanel extends JPanel implements IListener {
 			return;
 		}
 		int choice = JOptionPane.showConfirmDialog(mf, 
-				"å¯¹æ‰‹å‘ä½ ç”³è¯·æ‚”æ£‹ï¼Œæ˜¯å¦åŒæ„ï¼Ÿ", "æ‚”æ£‹ç”³è¯·", JOptionPane.YES_NO_OPTION);
+				"¶ÔÊÖÏòÄãÉêÇë»ÚÆå£¬ÊÇ·ñÍ¬Òâ£¿", "»ÚÆåÉêÇë", JOptionPane.YES_NO_OPTION);
 		boolean agree = (choice == JOptionPane.YES_OPTION);
 		client.sendRepUndo(agree);
 
@@ -479,13 +479,13 @@ public class GridPanel extends JPanel implements IListener {
 			currColor = (myColor ^ 3);
 			hasUndone = true;
 			syncStatus();
-			JOptionPane.showMessageDialog(mf, "ä½ åŒæ„äº†å¯¹æ‰‹çš„æ‚”æ£‹ç”³è¯·ã€‚");
+			JOptionPane.showMessageDialog(mf, "ÄãÍ¬ÒâÁË¶ÔÊÖµÄ»ÚÆåÉêÇë¡£");
 		}
 	}
 
 	/**
-	 * ç½‘ç»œç›‘å¬å›è°ƒï¼Œæ”¶åˆ°å¯¹æ‰‹é’ˆå¯¹å·±æ–¹æ‚”æ£‹ç”³è¯·çš„ç­”å¤
-	 * @param agree å¯¹æ‰‹æ˜¯å¦åŒæ„
+	 * ÍøÂç¼àÌı»Øµ÷£¬ÊÕµ½¶ÔÊÖÕë¶Ô¼º·½»ÚÆåÉêÇëµÄ´ğ¸´
+	 * @param agree ¶ÔÊÖÊÇ·ñÍ¬Òâ
 	 */
 	public void repUndo(boolean agree) {
 		if (agree) {
@@ -495,40 +495,40 @@ public class GridPanel extends JPanel implements IListener {
 			currColor = myColor;
 			hasUndone = true;
 			syncStatus();
-			JOptionPane.showMessageDialog(mf, "å¯¹æ‰‹åŒæ„äº†æ‚”æ£‹ï¼Œè¯·é‡æ–°è½å­ï¼");
+			JOptionPane.showMessageDialog(mf, "¶ÔÊÖÍ¬ÒâÁË»ÚÆå£¬ÇëÖØĞÂÂä×Ó£¡");
 		} else {
-			JOptionPane.showMessageDialog(mf, "å¯¹æ‰‹æ‹’ç»äº†ä½ çš„æ‚”æ£‹ç”³è¯·ï¼");
+			JOptionPane.showMessageDialog(mf, "¶ÔÊÖ¾Ü¾øÁËÄãµÄ»ÚÆåÉêÇë£¡");
 		}
 	}
 
 	/**
-	 * åŒæ­¥å¹¶åˆ·æ–°ä¸»çª—å£é¡¶éƒ¨çš„çŠ¶æ€æ 
+	 * Í¬²½²¢Ë¢ĞÂÖ÷´°¿Ú¶¥²¿µÄ×´Ì¬À¸
 	 */
 	private void syncStatus() {
 		if (mode == ONLINE) {
-			String myRole = (myColor == IGameCheck.BLACK) ? "é»‘æ£‹" : "ç™½æ£‹";
+			String myRole = (myColor == IGameCheck.BLACK) ? "ºÚÆå" : "°×Æå";
 			if (currColor == myColor) {
-				mf.updateStatus("[è”æœºå¯¹æˆ˜ - ä½ æ‰§" + myRole + "] ä½ çš„å›åˆ", false);
+				mf.updateStatus("[Áª»ú¶ÔÕ½ - ÄãÖ´" + myRole + "] ÄãµÄ»ØºÏ", false);
 			} else {
-				mf.updateStatus("[è”æœºå¯¹æˆ˜ - ä½ æ‰§" + myRole + "] ç­‰å¾…å¯¹æ‰‹", false);
+				mf.updateStatus("[Áª»ú¶ÔÕ½ - ÄãÖ´" + myRole + "] µÈ´ı¶ÔÊÖ", false);
 			}
 		} else if (mode == LOCAL) {
-			String nextRole = (currColor == IGameCheck.BLACK) ? "é»‘æ£‹" : "ç™½æ£‹";
-			mf.updateStatus("[å•æœºæ¨¡å¼] è½®åˆ° " + nextRole + " è½å­", true);
+			String nextRole = (currColor == IGameCheck.BLACK) ? "ºÚÆå" : "°×Æå";
+			mf.updateStatus("[µ¥»úÄ£Ê½] ÂÖµ½ " + nextRole + " Âä×Ó", true);
 		} 
 		else if (mode == PVE) {
-			String myRole = (myColor == IGameCheck.BLACK) ? "é»‘æ£‹" : "ç™½æ£‹";
-			String diffName = "ç®€å•";
-			if (currentAiLevel == IGameAI.MID) diffName = "æ™®é€š";
-			else if (currentAiLevel == IGameAI.HARD) diffName = "å›°éš¾";
-			mf.updateStatus("[äººæœºå¯¹æˆ˜(" + diffName + ") - ä½ æ‰§" + myRole + "] [è½®åˆ°ä½ äº†]", true);
+			String myRole = (myColor == IGameCheck.BLACK) ? "ºÚÆå" : "°×Æå";
+			String diffName = "¼òµ¥";
+			if (currentAiLevel == IGameAI.MID) diffName = "ÆÕÍ¨";
+			else if (currentAiLevel == IGameAI.HARD) diffName = "À§ÄÑ";
+			mf.updateStatus("[ÈË»ú¶ÔÕ½(" + diffName + ") - ÄãÖ´" + myRole + "] [ÂÖµ½ÄãÁË]", true);
 		}
 	}
 
 	/**
-	 * å†…éƒ¨æ‰§è¡Œæ­¥æ•°å›é€€è¾…åŠ©æ–¹æ³•
-	 * å¾ªç¯æ‰§è¡Œå‡ºæ ˆ stkPopï¼ŒåŒæ­¥å‰Šå‡ Hex æ£‹è°±é•¿åº¦ï¼Œå¹¶é‡ç»˜çº¢ç‚¹æ ‡è®°
-	 * @param steps å¾…å›é€€çš„æ­¥æ•°
+	 * ÄÚ²¿Ö´ĞĞ²½Êı»ØÍË¸¨Öú·½·¨
+	 * Ñ­»·Ö´ĞĞ³öÕ» stkPop£¬Í¬²½Ï÷¼õ Hex ÆåÆ×³¤¶È£¬²¢ÖØ»æºìµã±ê¼Ç
+	 * @param steps ´ı»ØÍËµÄ²½Êı
 	 */
 	private void executeUndoSteps(int steps) {
 		for (int i = 0; i < steps; i++) {
@@ -551,46 +551,46 @@ public class GridPanel extends JPanel implements IListener {
 	}
 
 	/**
-	 * ä¸»åŠ¨è®¤è¾“å¤„ç†
+	 * Ö÷¶¯ÈÏÊä´¦Àí
 	 */
 	public void giveUp() {
 		if (gameOver) {
-			JOptionPane.showMessageDialog(mf, "æ¸¸æˆå·²ç»“æŸï¼");
+			JOptionPane.showMessageDialog(mf, "ÓÎÏ·ÒÑ½áÊø£¡");
 			return;
 		}
-		int choice = JOptionPane.showConfirmDialog(mf, "ç¡®è®¤è®¤è¾“å—ï¼Ÿ", "è®¤è¾“ç¡®è®¤", JOptionPane.YES_NO_OPTION);
+		int choice = JOptionPane.showConfirmDialog(mf, "È·ÈÏÈÏÊäÂğ£¿", "ÈÏÊäÈ·ÈÏ", JOptionPane.YES_NO_OPTION);
 		if (choice != JOptionPane.YES_OPTION) return;
 		gameOver = true;
 		if (mode == LOCAL) {
-			String loser = (currColor == IGameCheck.BLACK) ? "é»‘æ£‹" : "ç™½æ£‹";
-			String winner = (currColor == IGameCheck.BLACK) ? "ç™½æ£‹" : "é»‘æ£‹";
-			JOptionPane.showMessageDialog(mf, loser + " è®¤è¾“ï¼Œæ­å–œ " + winner + " è·èƒœï¼");
-			mf.updateStatus("[å•æœºæ¨¡å¼] " + winner + " è·èƒœï¼", true);
+			String loser = (currColor == IGameCheck.BLACK) ? "ºÚÆå" : "°×Æå";
+			String winner = (currColor == IGameCheck.BLACK) ? "°×Æå" : "ºÚÆå";
+			JOptionPane.showMessageDialog(mf, loser + " ÈÏÊä£¬¹§Ï² " + winner + " »ñÊ¤£¡");
+			mf.updateStatus("[µ¥»úÄ£Ê½] " + winner + " »ñÊ¤£¡", true);
 		} else if (mode == PVE) {
-			JOptionPane.showMessageDialog(mf, "ä½ å·²è®¤è¾“ï¼Œç”µè„‘è·èƒœï¼");
-			mf.updateStatus("[äººæœºå¯¹æˆ˜] ç”µè„‘è·èƒœï¼", true);
+			JOptionPane.showMessageDialog(mf, "ÄãÒÑÈÏÊä£¬µçÄÔ»ñÊ¤£¡");
+			mf.updateStatus("[ÈË»ú¶ÔÕ½] µçÄÔ»ñÊ¤£¡", true);
 		} else if (mode == ONLINE) {
 			int myId = (mf.getCurrUser() != null) ? mf.getCurrUser().getID() : 0;
 			int opponentId = (myId == realBlackId) ? realWhiteId : realBlackId;
 			mf.settleMatch(realBlackId, realWhiteId, opponentId, stepsRecord.toString());
 			client.disconnect();
-			JOptionPane.showMessageDialog(mf, "ä½ å·²è®¤è¾“ï¼Œæœ¬å±€åˆ¤è´Ÿï¼");
-			mf.updateStatus("[è”æœºå¯¹æˆ˜] ä½ å·²è®¤è¾“ï¼", true);
+			JOptionPane.showMessageDialog(mf, "ÄãÒÑÈÏÊä£¬±¾¾ÖÅĞ¸º£¡");
+			mf.updateStatus("[Áª»ú¶ÔÕ½] ÄãÒÑÈÏÊä£¡", true);
 		}
 	}
 	
 	/**
-	 * æ”¶åˆ°å³æ—¶èŠå¤©æ¶ˆæ¯ï¼Œæ¨é€åˆ° ChatPanel
+	 * ÊÕµ½¼´Ê±ÁÄÌìÏûÏ¢£¬ÍÆËÍµ½ ChatPanel
 	 */
 	public void receiveChat(String msg) {
 		if (mf != null && mf.getChatPanel() != null) {
-			mf.getChatPanel().appendMessage("å¯¹æ‰‹", msg);
+			mf.getChatPanel().appendMessage("¶ÔÊÖ", msg);
 		}
 	}
 	
 	/**
-	 * åŠ¨æ€æ›´æ¢æ£‹ç›˜èƒŒæ™¯åº•è‰²
-	 * @param c æ–°çš„é¢œè‰²å¯¹è±¡
+	 * ¶¯Ì¬¸ü»»ÆåÅÌ±³¾°µ×É«
+	 * @param c ĞÂµÄÑÕÉ«¶ÔÏó
 	 */
 	public void setBoardColor(Color c) {
 		this.currentBgColor = c;
@@ -599,14 +599,14 @@ public class GridPanel extends JPanel implements IListener {
 	}
 	
 	/**
-	 * è·å–æ¨¡å¼
+	 * »ñÈ¡Ä£Ê½
 	 */
 	public int getMode() {
 		return this.mode;
 	}
 	
 	/**
-	 * è·å–æ¸¸æˆæ˜¯å¦ç»“æŸ
+	 * »ñÈ¡ÓÎÏ·ÊÇ·ñ½áÊø
 	 */
 	public boolean getOver() {
 		return this.gameOver;

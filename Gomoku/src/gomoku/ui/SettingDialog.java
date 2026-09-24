@@ -9,8 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * æ¸¸æˆè®¾ç½®
- * ç»§æ‰¿è‡ª JDialogï¼Œå¯¹å±€è®¾ç½®
+ * ÓÎÏ·ÉèÖÃ
+ * ¼Ì³Ğ×Ô JDialog£¬¶Ô¾ÖÉèÖÃ
  */
 public class SettingDialog extends JDialog {
     private static final long serialVersionUID = 1L;
@@ -21,11 +21,11 @@ public class SettingDialog extends JDialog {
     private JLabel displayLabel;
 
     /**
-     * æ„é€ æ–¹æ³•ï¼Œåˆå§‹åŒ–çª—å£
-     * @param mf ä¸»çª—å£å¼•ç”¨ï¼Œç”¨äºæ›´æ¢ GridPanel æ£‹ç›˜
+     * ¹¹Ôì·½·¨£¬³õÊ¼»¯´°¿Ú
+     * @param mf Ö÷´°¿ÚÒıÓÃ£¬ÓÃÓÚ¸ü»» GridPanel ÆåÅÌ
      */
     public SettingDialog(MainFrame mf) {
-        super(mf, "æ¸¸æˆä¸ªæ€§åŒ–è®¾ç½®", true);
+        super(mf, "ÓÎÏ·¸öĞÔ»¯ÉèÖÃ", true);
         this.setSize(380, 520);
         this.setLocationRelativeTo(mf);
         this.setResizable(false);
@@ -36,10 +36,10 @@ public class SettingDialog extends JDialog {
         mainPanel.setBackground(new Color(248, 245, 240));
         JPanel themePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         themePanel.setOpaque(false);
-        themePanel.setBorder(BorderFactory.createTitledBorder("æ£‹ç›˜èƒŒæ™¯ä¸»é¢˜"));
-        JRadioButton theme1Btn = new JRadioButton("ä¸»é¢˜1", true);
-        JRadioButton theme2Btn = new JRadioButton("ä¸»é¢˜2");
-        JRadioButton theme3Btn = new JRadioButton("ä¸»é¢˜3");
+        themePanel.setBorder(BorderFactory.createTitledBorder("ÆåÅÌ±³¾°Ö÷Ìâ"));
+        JRadioButton theme1Btn = new JRadioButton("Ö÷Ìâ1", true);
+        JRadioButton theme2Btn = new JRadioButton("Ö÷Ìâ2");
+        JRadioButton theme3Btn = new JRadioButton("Ö÷Ìâ3");
         theme1Btn.setOpaque(false); 
         theme2Btn.setOpaque(false); 
         theme3Btn.setOpaque(false);
@@ -64,9 +64,9 @@ public class SettingDialog extends JDialog {
         mainPanel.add(Box.createVerticalStrut(8));
         JPanel soundPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         soundPanel.setOpaque(false);
-        soundPanel.setBorder(BorderFactory.createTitledBorder("å£°éŸ³éŸ³æ•ˆè®¾ç½®"));
-        JCheckBox cbSound = new JCheckBox("è½å­éŸ³æ•ˆ", SoundPlayer.isSoundEnabled());
-        JCheckBox cbBgm = new JCheckBox("èƒŒæ™¯éŸ³ä¹", false);
+        soundPanel.setBorder(BorderFactory.createTitledBorder("ÉùÒôÒôĞ§ÉèÖÃ"));
+        JCheckBox cbSound = new JCheckBox("Âä×ÓÒôĞ§", SoundPlayer.isSoundEnabled());
+        JCheckBox cbBgm = new JCheckBox("±³¾°ÒôÀÖ", false);
         cbSound.setOpaque(false); 
         cbBgm.setOpaque(false);
         cbSound.addActionListener(new ActionListener() {
@@ -93,7 +93,7 @@ public class SettingDialog extends JDialog {
         for (int i = 1; i <= 9; i++) {
             final int num = i;
             JButton numBtn = new JButton(String.valueOf(num));
-            numBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 15));
+            numBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 15));
             numBtn.setFocusPainted(false);
             numBtn.setBackground(new Color(230, 215, 195));
             numBtn.addActionListener(new ActionListener() {
@@ -108,8 +108,8 @@ public class SettingDialog extends JDialog {
             numPadPanel.add(numBtn);
         }
         authPanel.add(numPadPanel, BorderLayout.CENTER);
-        JButton clearBtn = new JButton("æ¸…ç©ºè¾“å…¥");
-        clearBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.PLAIN, 12));
+        JButton clearBtn = new JButton("Çå¿ÕÊäÈë");
+        clearBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
         clearBtn.setFocusPainted(false);
         clearBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -121,8 +121,8 @@ public class SettingDialog extends JDialog {
         mainPanel.add(authPanel);
         this.add(mainPanel, BorderLayout.CENTER);
         JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 8));
-        JButton closeBtn = new JButton("å®Œæˆ");
-        closeBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 13));
+        JButton closeBtn = new JButton("Íê³É");
+        closeBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 13));
         closeBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
@@ -133,8 +133,8 @@ public class SettingDialog extends JDialog {
     }
 
     /**
-     * åˆ·æ–°ç”µå­å¯†ç å±å¹•æ–‡æœ¬
-     * è‹¥ç¼“å†²åŒºä¸ºç©ºæ˜¾ç¤ºé»˜è®¤å ä½ç¬¦ "000000"ï¼Œå¦åˆ™æ˜¾ç¤ºå½“å‰è¾“å…¥çš„æ•°å­—ä¸²
+     * Ë¢ĞÂµç×ÓÃÜÂëÆÁÄ»ÎÄ±¾
+     * Èô»º³åÇøÎª¿ÕÏÔÊ¾Ä¬ÈÏÕ¼Î»·û "000000"£¬·ñÔòÏÔÊ¾µ±Ç°ÊäÈëµÄÊı×Ö´®
      */
     private void updateDisplay() {
         if (inputBuffer.length() == 0) {
@@ -145,14 +145,14 @@ public class SettingDialog extends JDialog {
     }
 
     /**
-     * åŒ¹é…ç‰¹å®šå­—ç¬¦ä¸² "114514"ï¼Œè‹¥è¾“æ»¡ 6 ä½éåŒ¹é…å¯†ç åˆ™è‡ªåŠ¨é‡ç½®
+     * Æ¥ÅäÌØ¶¨×Ö·û´® "114514"£¬ÈôÊäÂú 6 Î»·ÇÆ¥ÅäÃÜÂëÔò×Ô¶¯ÖØÖÃ
      */
     private void checkPassword() {
         String code = inputBuffer.toString();
         if (code.equals("114514")) {
             JOptionPane.showMessageDialog(this, 
                 "man!", 
-                "æˆåŠŸ", 
+                "³É¹¦", 
                 JOptionPane.INFORMATION_MESSAGE);
             inputBuffer.setLength(0);
             updateDisplay();

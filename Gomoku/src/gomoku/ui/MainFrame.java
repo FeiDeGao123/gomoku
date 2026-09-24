@@ -17,8 +17,8 @@ import gomoku.network.IClient;
 import gomoku.network.SocketClient;
 
 /**
- * äº”å­æ£‹æ§åˆ¶ä¸»çª—å£
- * ç»§æ‰¿è‡ª JFrameï¼Œç¨‹åºå¯åŠ¨å…¥å£
+ * Îå×ÓÆå¿ØÖÆÖ÷´°¿Ú
+ * ¼Ì³Ğ×Ô JFrame£¬³ÌĞòÆô¶¯Èë¿Ú
  */
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -41,10 +41,10 @@ public class MainFrame extends JFrame {
     private User currUser;
     
     /**
-     * æ„é€ æ–¹æ³•ï¼Œåˆå§‹åŒ–çª—å£ã€æ³¨å…¥åˆ†å±‚å¯¹è±¡ã€ç»„è£…å¸ƒå±€ã€æ³¨å†Œç›‘å¬
+     * ¹¹Ôì·½·¨£¬³õÊ¼»¯´°¿Ú¡¢×¢Èë·Ö²ã¶ÔÏó¡¢×é×°²¼¾Ö¡¢×¢²á¼àÌı
      */
     public MainFrame() {
-        this.setTitle("ç½‘ç»œäº”å­æ£‹");
+        this.setTitle("ÍøÂçÎå×ÓÆå");
         int frameW = (int) (920 * scaleFactor);
         int frameH = (int) (850 * scaleFactor);
         this.setSize(frameW, frameH);
@@ -73,40 +73,40 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * è·å–å½“å‰ç™»å½•ç©å®¶å¯¹è±¡
-     * @return å½“å‰ç™»å½•çš„ User å®ä½“
+     * »ñÈ¡µ±Ç°µÇÂ¼Íæ¼Ò¶ÔÏó
+     * @return µ±Ç°µÇÂ¼µÄ User ÊµÌå
      */
     public User getCurrUser() {
     	return currUser;
     }
     
     /**
-     * è·å–æ•°æ®è®¿é—®å¯¹è±¡å¼•ç”¨
-     * @return DataProcessing å®ä¾‹
+     * »ñÈ¡Êı¾İ·ÃÎÊ¶ÔÏóÒıÓÃ
+     * @return DataProcessing ÊµÀı
      */
     public IDataProcessing getDataProcessing() {
     	return dp;
     }
 
     /**
-     * è·å–æ£‹ç›˜é¢æ¿å¼•ç”¨
-     * @return GridPanel å®ä¾‹
+     * »ñÈ¡ÆåÅÌÃæ°åÒıÓÃ
+     * @return GridPanel ÊµÀı
      */
     public GridPanel getGridPanel() {
         return gp;
     }
 
     /**
-     * è·å–èŠå¤©é¢æ¿å¼•ç”¨
-     * @return ChatPanel å®ä¾‹
+     * »ñÈ¡ÁÄÌìÃæ°åÒıÓÃ
+     * @return ChatPanel ÊµÀı
      */
     public ChatPanel getChatPanel() {
         return chatPanel;
     }
 
     /**
-     * è®¾ç½®å½“å‰ç™»å½•ç”¨æˆ·ï¼Œåˆ·æ–°ä¸»èœå•å¤§å…çš„ç”¨æˆ·ä¿¡æ¯å±•ç¤ºæ 
-     * @param u ç™»å½•æˆåŠŸçš„ User å¯¹è±¡
+     * ÉèÖÃµ±Ç°µÇÂ¼ÓÃ»§£¬Ë¢ĞÂÖ÷²Ëµ¥´óÌüµÄÓÃ»§ĞÅÏ¢Õ¹Ê¾À¸
+     * @param u µÇÂ¼³É¹¦µÄ User ¶ÔÏó
      */
     public void setCurrUser(User u) {
         this.currUser = u;
@@ -116,9 +116,9 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * æäº¤å¯¹å±€ç»“ç®—
-     * @param isWin    æœ¬å±€æ˜¯å¦è·èƒœ
-     * @param hexSteps åå…­è¿›åˆ¶æ£‹è°±åæ ‡ä¸²
+     * Ìá½»¶Ô¾Ö½áËã
+     * @param isWin    ±¾¾ÖÊÇ·ñ»ñÊ¤
+     * @param hexSteps Ê®Áù½øÖÆÆåÆ××ø±ê´®
      */
     public void settleMatch(boolean isWin, String hexSteps) {
         if (currUser != null) {
@@ -141,55 +141,55 @@ public class MainFrame extends JFrame {
     }
     
     /**
-     * åˆ›å»ºå¯¹å±€ç•Œé¢
-     * BorderLayoutï¼ŒåŒ—éƒ¨æ”¾æ§åˆ¶å·¥å…·æ¡ barï¼Œä¸­é—´æ”¾æ£‹ç›˜ gpï¼Œä¸œä¾§æ”¾èŠå¤©æ¡† chatPanel
-     * @return å®Œæ•´çš„æ¸¸æˆå®¤å¡ç‰‡é¢æ¿
+     * ´´½¨¶Ô¾Ö½çÃæ
+     * BorderLayout£¬±±²¿·Å¿ØÖÆ¹¤¾ßÌõ bar£¬ÖĞ¼ä·ÅÆåÅÌ gp£¬¶«²à·ÅÁÄÌì¿ò chatPanel
+     * @return ÍêÕûµÄÓÎÏ·ÊÒ¿¨Æ¬Ãæ°å
      */
     private JPanel createBar() {
     	JPanel option = new JPanel(new BorderLayout());
     	bar = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 8));
     	bar.setBackground(new Color(205, 168, 120));
-    	backBtn = new JButton("è¿”å›");
-    	backBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, (int) (14 * scaleFactor)));
+    	backBtn = new JButton("·µ»Ø");
+    	backBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, (int) (14 * scaleFactor)));
     	backBtn.setFocusPainted(false);
     	backBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (gp.getMode() == GridPanel.ONLINE && !gp.getOver()) {
 	    			int choice = JOptionPane.showConfirmDialog(MainFrame.this, 
-	    					"å½“å‰æ­£åœ¨è”æœºå¯¹æˆ˜ä¸­ï¼Œé€€å‡ºå°†ç›´æ¥åˆ¤è´Ÿé€€å‡ºï¼Œæ˜¯å¦ç¡®è®¤é€€å‡ºï¼Ÿ", 
-	    					"é€€å‡ºè­¦å‘Š", JOptionPane.YES_NO_OPTION);
+	    					"µ±Ç°ÕıÔÚÁª»ú¶ÔÕ½ÖĞ£¬ÍË³ö½«Ö±½ÓÅĞ¸ºÍË³ö£¬ÊÇ·ñÈ·ÈÏÍË³ö£¿", 
+	    					"ÍË³ö¾¯¸æ", JOptionPane.YES_NO_OPTION);
 	    		    if (choice != JOptionPane.YES_OPTION) return;
 	    		    settleMatch(false, "");
 	    		}
 	    		back();
 			}
 		});
-    	rstBtn = new JButton("é‡æ–°å¼€å§‹");
-        rstBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, (int) (14 * scaleFactor)));
+    	rstBtn = new JButton("ÖØĞÂ¿ªÊ¼");
+        rstBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, (int) (14 * scaleFactor)));
         rstBtn.setFocusPainted(false);
         rstBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gp.restart();
 			}
 		});
-        undoBtn = new JButton("æ‚”æ£‹");
-        undoBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, (int) (14 * scaleFactor)));
+        undoBtn = new JButton("»ÚÆå");
+        undoBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, (int) (14 * scaleFactor)));
         undoBtn.setFocusPainted(false);
         undoBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gp.undo();
 			}
 		});
-        giveUpBtn = new JButton("è®¤è¾“");
-        giveUpBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, (int) (14 * scaleFactor)));
+        giveUpBtn = new JButton("ÈÏÊä");
+        giveUpBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, (int) (14 * scaleFactor)));
         giveUpBtn.setFocusPainted(false);
         giveUpBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gp.giveUp();
 			}
 		});
-        settingBtn = new JButton("è®¾ç½®");
-        settingBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, (int) (14 * scaleFactor)));
+        settingBtn = new JButton("ÉèÖÃ");
+        settingBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, (int) (14 * scaleFactor)));
         settingBtn.setFocusPainted(false);
         settingBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -202,8 +202,8 @@ public class MainFrame extends JFrame {
         bar.add(undoBtn);
         bar.add(giveUpBtn);
         bar.add(settingBtn);
-        status = new JLabel("å‡†å¤‡ä¸­...");
-        status.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, (int) (15 * scaleFactor)));
+        status = new JLabel("×¼±¸ÖĞ...");
+        status.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, (int) (15 * scaleFactor)));
         status.setForeground(new Color(60, 20, 0));
         bar.add(status);
         option.add(bar, BorderLayout.NORTH);
@@ -213,19 +213,19 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * åŠ¨æ€è°ƒæ•´é¡¶éƒ¨å·¥å…·æ¡æ’ç‰ˆä¸å­—å·å¤§å°ï¼Œé˜²æ­¢å…¨å±æˆ–å¤§çª—å£ä¸‹å·¥å…·æ¡æŒ‰é’®å­—å·è¿‡å°
+     * ¶¯Ì¬µ÷Õû¶¥²¿¹¤¾ßÌõÅÅ°æÓë×ÖºÅ´óĞ¡£¬·ÀÖ¹È«ÆÁ»ò´ó´°¿ÚÏÂ¹¤¾ßÌõ°´Å¥×ÖºÅ¹ıĞ¡
      */
     private void adjustTopBarUI() {
         int w = getWidth();
         if (w <= 0 || bar == null) return;
         float dynamicScale = Math.max(1.0f, Math.min(1.8f, w / 920.0f));
-        Font btnFont = new Font("å¾®è½¯é›…é»‘", Font.BOLD, Math.round(14 * dynamicScale));
+        Font btnFont = new Font("Î¢ÈíÑÅºÚ", Font.BOLD, Math.round(14 * dynamicScale));
         if (backBtn != null) backBtn.setFont(btnFont);
         if (rstBtn != null) rstBtn.setFont(btnFont);
         if (undoBtn != null) undoBtn.setFont(btnFont);
         if (giveUpBtn != null) giveUpBtn.setFont(btnFont);
         if (settingBtn != null) settingBtn.setFont(btnFont);
-        if (status != null) status.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, Math.round(15 * dynamicScale)));
+        if (status != null) status.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, Math.round(15 * dynamicScale)));
         if (chatPanel != null) {
             chatPanel.setPreferredSize(new Dimension(Math.round(200 * dynamicScale), 0));
         }
@@ -234,7 +234,7 @@ public class MainFrame extends JFrame {
     }
     
     /**
-     * å¯åŠ¨å•æœºåŒäººå¯¹æˆ˜ï¼Œåˆ‡æ¢å¡ç‰‡è‡³æ¸¸æˆåŒº
+     * Æô¶¯µ¥»úË«ÈË¶ÔÕ½£¬ÇĞ»»¿¨Æ¬ÖÁÓÎÏ·Çø
      */
     public void startLocalGame() {
     	gp.restart();
@@ -243,7 +243,7 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * è”æœºåŒ¹é…æˆåŠŸåè°ƒèµ·ï¼Œåˆ‡æ¢å¡ç‰‡è‡³æ¸¸æˆåŒº
+     * Áª»úÆ¥Åä³É¹¦ºóµ÷Æğ£¬ÇĞ»»¿¨Æ¬ÖÁÓÎÏ·Çø
      */
     public void startOnlineGame() {
     	if (chatPanel != null) chatPanel.clear();
@@ -251,9 +251,9 @@ public class MainFrame extends JFrame {
     }
     
     /**
-     * å¯åŠ¨äººæœºå¯¹æˆ˜æ¨¡å¼
-     * @param playerColor ç©å®¶æ‰§æ£‹é¢œè‰²
-     * @param level AI éš¾åº¦ç­‰çº§ 
+     * Æô¶¯ÈË»ú¶ÔÕ½Ä£Ê½
+     * @param playerColor Íæ¼ÒÖ´ÆåÑÕÉ«
+     * @param level AI ÄÑ¶ÈµÈ¼¶ 
      */
     public void startPveGame(int playerColor, int level) {
         gp.startPve(playerColor, level);
@@ -266,8 +266,8 @@ public class MainFrame extends JFrame {
     }
     
     /**
-     * ä»æ¸¸æˆåŒºè¿”å›ä¸»èœå•å¤§å…
-     * æ–­å¼€ Socket è¿æ¥ã€æ¸…ç©ºæ£‹ç›˜ä¸èŠå¤©è®°å½•ï¼Œå¹¶åˆ‡æ¢å› MENU å¡ç‰‡
+     * ´ÓÓÎÏ·Çø·µ»ØÖ÷²Ëµ¥´óÌü
+     * ¶Ï¿ª Socket Á¬½Ó¡¢Çå¿ÕÆåÅÌÓëÁÄÌì¼ÇÂ¼£¬²¢ÇĞ»»»Ø MENU ¿¨Æ¬
      */
     public void back() {
     	client.disconnect();
@@ -277,9 +277,9 @@ public class MainFrame extends JFrame {
     }
     
     /**
-     * åˆ·æ–°é¡¶éƒ¨çŠ¶æ€æç¤ºæ–‡å­—å¹¶æ§åˆ¶é‡æ–°å¼€å§‹æŒ‰é’®çš„å¯ç”¨çŠ¶æ€
-     * @param text æç¤ºæ–‡æœ¬
-     * @param restartFlag é‡æ–°å¼€å§‹æŒ‰é’®æ˜¯å¦ä½¿èƒ½å¯ç”¨
+     * Ë¢ĞÂ¶¥²¿×´Ì¬ÌáÊ¾ÎÄ×Ö²¢¿ØÖÆÖØĞÂ¿ªÊ¼°´Å¥µÄ¿ÉÓÃ×´Ì¬
+     * @param text ÌáÊ¾ÎÄ±¾
+     * @param restartFlag ÖØĞÂ¿ªÊ¼°´Å¥ÊÇ·ñÊ¹ÄÜ¿ÉÓÃ
      */
     public void updateStatus(String text, boolean restartFlag) {
     	if (status != null) {
@@ -291,8 +291,8 @@ public class MainFrame extends JFrame {
     }
     
     /**
-     * ä¸»å…¥å£
-     * @param args å‘½ä»¤è¡Œå¯åŠ¨å‚æ•°
+     * Ö÷Èë¿Ú
+     * @param args ÃüÁîĞĞÆô¶¯²ÎÊı
      */
     public static void main(String[] args) {
     	System.setProperty("sun.java2d.uiScale.enabled", "true");
@@ -305,8 +305,8 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * é€šè¿‡ Toolkit æ¢æµ‹å±å¹•ç‰©ç†åˆ†è¾¨ç‡ä¸ DPIï¼Œå¾—åˆ°ç¼©æ”¾å€ç‡ï¼Œ
-     * å¹¶éå† UIManager é…ç½®é¡¹ï¼Œå°†æ‰€æœ‰ Swing æ§ä»¶å­—ä½“æŒ‰æ¯”ä¾‹æ”¾å¤§
+     * Í¨¹ı Toolkit Ì½²âÆÁÄ»ÎïÀí·Ö±æÂÊÓë DPI£¬µÃµ½Ëõ·Å±¶ÂÊ£¬
+     * ²¢±éÀú UIManager ÅäÖÃÏî£¬½«ËùÓĞ Swing ¿Ø¼ş×ÖÌå°´±ÈÀı·Å´ó
      */
     private static void initScaleUI() {
         try {

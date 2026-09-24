@@ -12,8 +12,8 @@ import gomoku.logic.GameCheck;
 import gomoku.network.IClient;
 
 /**
- * äº”å­æ£‹ä¸»èœå•é¢æ¿
- * ç»§æ‰¿è‡ª JPanelï¼Œä¸»èœå•é¢æ¿
+ * Îå×ÓÆåÖ÷²Ëµ¥Ãæ°å
+ * ¼Ì³Ğ×Ô JPanel£¬Ö÷²Ëµ¥Ãæ°å
  */
 public class MenuPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -28,16 +28,16 @@ public class MenuPanel extends JPanel {
 	private JButton rankBtn;
 
 	/**
-	 * æ— å‚æ„é€ æ–¹æ³•
+	 * ÎŞ²Î¹¹Ôì·½·¨
 	 */
 	public MenuPanel() {
 		this(null, null);
 	}
 
 	/**
-	 * æ ¸å¿ƒæ„é€ æ–¹æ³•ï¼Œåˆå§‹åŒ–ä¸»èœå•å¤§å…ç•Œé¢å¸ƒå±€
-	 * @param pf ä¸»çª—å£å®¹å™¨å¼•ç”¨
-	 * @param client ç½‘ç»œé€šä¿¡å®¢æˆ·ç«¯å¼•ç”¨
+	 * ºËĞÄ¹¹Ôì·½·¨£¬³õÊ¼»¯Ö÷²Ëµ¥´óÌü½çÃæ²¼¾Ö
+	 * @param pf Ö÷´°¿ÚÈİÆ÷ÒıÓÃ
+	 * @param client ÍøÂçÍ¨ĞÅ¿Í»§¶ËÒıÓÃ
 	 */
 	public MenuPanel(MainFrame pf, IClient client) {
 		this.pf = pf;
@@ -45,11 +45,11 @@ public class MenuPanel extends JPanel {
 		this.setLayout(new BorderLayout());
 		JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
 		topBar.setOpaque(false);
-		userLabel = new JLabel("çŠ¶æ€: æœªç™»å½•");
-		userLabel.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));
+		userLabel = new JLabel("×´Ì¬: Î´µÇÂ¼");
+		userLabel.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
 		userLabel.setForeground(new Color(80, 40, 0));
-		userBtn = new JButton("ç™»å½• / æ³¨å†Œ");
-		userBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.PLAIN, 12));
+		userBtn = new JButton("µÇÂ¼ / ×¢²á");
+		userBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
 		userBtn.setBackground(new Color(230, 215, 195));
 		userBtn.setFocusPainted(false);
 		userBtn.addActionListener(new ActionListener() {
@@ -62,25 +62,25 @@ public class MenuPanel extends JPanel {
 		this.add(topBar, BorderLayout.NORTH);
 		JPanel centerPanel = new JPanel(new GridBagLayout());
 		centerPanel.setOpaque(false);
-		title = new JLabel("ç½‘ ç»œ äº” å­ æ£‹");
-		title.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 48));
+		title = new JLabel("Íø Âç Îå ×Ó Æå");
+		title.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 48));
 		title.setForeground(new Color(80, 40, 0));
 		GridBagConstraints gbcTitle = new GridBagConstraints();
 		gbcTitle.insets = new Insets(10, 0, 20, 0);
 		gbcTitle.gridx = 0;
 		gbcTitle.gridy = 0;
 		centerPanel.add(title, gbcTitle);
-		pveBtn = new JButton("äººæœºå¯¹æˆ˜");
+		pveBtn = new JButton("ÈË»ú¶ÔÕ½");
 		pveBtn.setPreferredSize(new Dimension(220, 48));
-		pveBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 20));
+		pveBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 20));
 		pveBtn.setBackground(new Color(230, 215, 195));
 		pveBtn.setFocusPainted(false);
 		pveBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (pf == null) return;
-				String[] diffOptions = {"ç®€å•æ¨¡å¼", "æ™®é€šæ¨¡å¼", "å›°éš¾æ¨¡å¼"};
+				String[] diffOptions = {"¼òµ¥Ä£Ê½", "ÆÕÍ¨Ä£Ê½", "À§ÄÑÄ£Ê½"};
 				int diffChoice = JOptionPane.showOptionDialog(
-					pf, "è¯·é€‰æ‹©äººæœºå¯¹æˆ˜éš¾åº¦ï¼š", "éš¾åº¦è®¾ç½®",
+					pf, "ÇëÑ¡ÔñÈË»ú¶ÔÕ½ÄÑ¶È£º", "ÄÑ¶ÈÉèÖÃ",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
 					null, diffOptions, diffOptions[0]
 				);
@@ -91,9 +91,9 @@ public class MenuPanel extends JPanel {
 				} else if (diffChoice == 2) {
 					selectedLevel = GameAI.HARD;
 				}
-				String[] options = {"æ‰§é»‘ (å…ˆæ‰‹)", "æ‰§ç™½ (åæ‰‹)"};
+				String[] options = {"Ö´ºÚ (ÏÈÊÖ)", "Ö´°× (ºóÊÖ)"};
 				int choice = JOptionPane.showOptionDialog(
-					pf, "è¯·é€‰æ‹©ä½ çš„æ‰§æ£‹æ–¹ï¼š", "å…ˆæ‰‹è®¾ç½®",
+					pf, "ÇëÑ¡ÔñÄãµÄÖ´Æå·½£º", "ÏÈÊÖÉèÖÃ",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
 					null, options, options[0]
 				);
@@ -109,9 +109,9 @@ public class MenuPanel extends JPanel {
 		gbcPve.gridx = 0;
 		gbcPve.gridy = 1;
 		centerPanel.add(pveBtn, gbcPve);
-		pvpLocalBtn = new JButton("å•æœºå¯¹æˆ˜");
+		pvpLocalBtn = new JButton("µ¥»ú¶ÔÕ½");
 		pvpLocalBtn.setPreferredSize(new Dimension(220, 48));
-		pvpLocalBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 20));
+		pvpLocalBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 20));
 		pvpLocalBtn.setBackground(new Color(230, 215, 195));
 		pvpLocalBtn.setFocusPainted(false);
 		pvpLocalBtn.addActionListener(new ActionListener() {
@@ -124,15 +124,15 @@ public class MenuPanel extends JPanel {
 		gbcLocal.gridx = 0;
 		gbcLocal.gridy = 2;
 		centerPanel.add(pvpLocalBtn, gbcLocal);
-		pvpOnlineBtn = new JButton("è”æœºå¯¹æˆ˜");
+		pvpOnlineBtn = new JButton("Áª»ú¶ÔÕ½");
 		pvpOnlineBtn.setPreferredSize(new Dimension(220, 48));
-		pvpOnlineBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 20));
+		pvpOnlineBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 20));
 		pvpOnlineBtn.setBackground(new Color(230, 215, 195));
 		pvpOnlineBtn.setFocusPainted(false);
 		pvpOnlineBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (pf != null && pf.getCurrUser() == null) {
-					JOptionPane.showMessageDialog(pf, "è”æœºå¯¹æˆ˜éœ€è¦ç™»å½•è´¦å·ï¼");
+					JOptionPane.showMessageDialog(pf, "Áª»ú¶ÔÕ½ĞèÒªµÇÂ¼ÕËºÅ£¡");
 					handleUserAction();
 					return;
 				}
@@ -147,14 +147,14 @@ public class MenuPanel extends JPanel {
 		this.add(centerPanel, BorderLayout.CENTER);
 		JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 15));
 		bottomBar.setOpaque(false);
-		historyBtn = new JButton("å†å²å¯¹å±€");
-		historyBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));
+		historyBtn = new JButton("ÀúÊ·¶Ô¾Ö");
+		historyBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
 		historyBtn.setBackground(new Color(230, 215, 195));
 		historyBtn.setFocusPainted(false);
 		historyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (pf == null || pf.getCurrUser() == null) {
-					JOptionPane.showMessageDialog(pf, "è¯·å…ˆåœ¨å³ä¸Šè§’ç™»å½•è´¦å·ä»¥æŸ¥çœ‹ä¸ªäººå†å²å¯¹å±€ï¼");
+					JOptionPane.showMessageDialog(pf, "ÇëÏÈÔÚÓÒÉÏ½ÇµÇÂ¼ÕËºÅÒÔ²é¿´¸öÈËÀúÊ·¶Ô¾Ö£¡");
 					return;
 				}
 				HistoryDialog historyDialog = new HistoryDialog(pf, pf.getCurrUser().getID(), pf.getDataProcessing());
@@ -162,8 +162,8 @@ public class MenuPanel extends JPanel {
 			}
 		});
 		bottomBar.add(historyBtn);
-		rankBtn = new JButton("æ’è¡Œæ¦œ");
-		rankBtn.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));
+		rankBtn = new JButton("ÅÅĞĞ°ñ");
+		rankBtn.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
 		rankBtn.setBackground(new Color(230, 215, 195));
 		rankBtn.setFocusPainted(false);
 		rankBtn.addActionListener(new ActionListener() {
@@ -183,24 +183,24 @@ public class MenuPanel extends JPanel {
 	}
 
 	/**
-	 * å¸ƒå±€åŠ¨æ€ç¼©æ”¾
+	 * ²¼¾Ö¶¯Ì¬Ëõ·Å
 	 */
 	private void adjustResponsiveUI() {
 		int w = getWidth();
 		if (w <= 0) return;
 		float scale = Math.max(1.0f, Math.min(1.8f, w / 800.0f));
-		title.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, Math.round(48 * scale)));
+		title.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, Math.round(48 * scale)));
 		int btnW = Math.round(220 * scale);
 		int btnH = Math.round(48 * scale);
 		Dimension btnDim = new Dimension(btnW, btnH);
-		Font btnFont = new Font("å¾®è½¯é›…é»‘", Font.BOLD, Math.round(20 * scale));
+		Font btnFont = new Font("Î¢ÈíÑÅºÚ", Font.BOLD, Math.round(20 * scale));
 		pveBtn.setPreferredSize(btnDim);
 		pveBtn.setFont(btnFont);
 		pvpLocalBtn.setPreferredSize(btnDim);
 		pvpLocalBtn.setFont(btnFont);
 		pvpOnlineBtn.setPreferredSize(btnDim);
 		pvpOnlineBtn.setFont(btnFont);
-		Font smallBtnFont = new Font("å¾®è½¯é›…é»‘", Font.BOLD, Math.round(14 * scale));
+		Font smallBtnFont = new Font("Î¢ÈíÑÅºÚ", Font.BOLD, Math.round(14 * scale));
 		historyBtn.setFont(smallBtnFont);
 		rankBtn.setFont(smallBtnFont);
 		revalidate();
@@ -208,7 +208,7 @@ public class MenuPanel extends JPanel {
 	}
 
 	/**
-	 * å¤„ç†ç©å®¶èº«ä»½æ“ä½œ
+	 * ´¦ÀíÍæ¼ÒÉí·İ²Ù×÷
 	 */
 	private void handleUserAction() {
 		if (pf == null) return;
@@ -219,7 +219,7 @@ public class MenuPanel extends JPanel {
 				pf.setCurrUser(u);
 			}
 		} else {
-			int choice = JOptionPane.showConfirmDialog(pf, "ç¡®å®šè¦é€€å‡ºå½“å‰è´¦å·å—ï¼Ÿ", "é€€å‡ºæç¤º", JOptionPane.YES_NO_OPTION);
+			int choice = JOptionPane.showConfirmDialog(pf, "È·¶¨ÒªÍË³öµ±Ç°ÕËºÅÂğ£¿", "ÍË³öÌáÊ¾", JOptionPane.YES_NO_OPTION);
 			if (choice == JOptionPane.YES_OPTION) {
 				pf.setCurrUser(null);
 			}
@@ -227,16 +227,16 @@ public class MenuPanel extends JPanel {
 	}
 
 	/**
-	 * åˆ·æ–°é¡¶éƒ¨ç©å®¶ä¿¡æ¯çŠ¶æ€
-	 * @param u å½“å‰ç™»å½•çš„ç”¨æˆ·å®ä½“
+	 * Ë¢ĞÂ¶¥²¿Íæ¼ÒĞÅÏ¢×´Ì¬
+	 * @param u µ±Ç°µÇÂ¼µÄÓÃ»§ÊµÌå
 	 */
 	public void updateUserInfo(User u) {
 		if (u == null) {
-			userLabel.setText("çŠ¶æ€: æœªç™»å½•");
-			userBtn.setText("ç™»å½• / æ³¨å†Œ");
+			userLabel.setText("×´Ì¬: Î´µÇÂ¼");
+			userBtn.setText("µÇÂ¼ / ×¢²á");
 		} else {
-			userLabel.setText(u.getName() + " [åˆ†: " + u.getScore() + " | èƒœ: " + u.getWinCnt() + " è´Ÿ: " + u.getLoseCnt() + "]");
-			userBtn.setText("é€€å‡º");
+			userLabel.setText(u.getName() + " [·Ö: " + u.getScore() + " | Ê¤: " + u.getWinCnt() + " ¸º: " + u.getLoseCnt() + "]");
+			userBtn.setText("ÍË³ö");
 		}
 	}
 }
